@@ -147,6 +147,172 @@ def initialize_database(database_file):
                 FOREIGN KEY(InventoryID) REFERENCES InventoryID(Inventory)  
         )""")
 
+      
+###################################################################
+# The following functions are SQL commands for inserting data     #
+# into the various tables of our database                         #
+###################################################################
+
+def create_restaurant(database_file, restaurant_data):
+    conn = sqlite3.connect(database_file)
+
+    sqlCommand = '''INSERT INTO Restaurant(State,City,StreetAddress,Password,Username,StoreName,PhoneNumber) VALUES (?,?,?,?,?,?,?) '''
+
+    cur = conn.cursor()
+    cur.execute(sqlCommand, restaurant_data)
+    conn.commit()
+
+def create_menu_update(database_file, menu_update_data):
+    conn = sqlite3.connect(database_file)
+
+    sqlCommand = '''INSERT INTO MenuUpdate(LastUpdated, MenuID, RestaurantUsername) VALUES (?,?,?)'''
+
+    cur = conn.cursor()
+    cur.execute(sqlCommand, menu_update_data)
+    conn.commit()
+
+def create_menu(database_file, menu_data):
+    conn = sqlite3.connect(database_file)
+
+    sqlCommand = '''INSERT INTO Menu(MenuID,RestaurantUsername) VALUES (?,?)'''
+
+    cur = conn.cursor()
+    cur.execute(sqlCommand, menu_data)
+    conn.commit()
+
+def create_browse(database_file, browse_data):
+    conn = sqlite3.connect(database_file)
+
+    sqlCommand = '''INSERT INTO Browse(LastBrowsed, CustomerUsername, MenuID) VALUES (?,?,?)'''
+
+    cur = conn.cursor()
+    cur.execute(sqlCommand, browse_data)
+    conn.commit()
+
+def create_customer(database_file, customer_data):
+    conn = sqlite3.connect(database_file)
+
+    sqlCommand = '''INSERT INTO Customer(Username,Password,Name,Birthday,Age) VALUES (?,?,?,?,?)'''
+
+    cur = conn.cursor()
+    cur.execute(sqlCommand, customer_data)
+    conn.commit()
+
+def create_customer_locations(database_file, customer_locations_data):
+    conn = sqlite3.connect(database_file)
+
+    sqlCommand = '''INSERT INTO CustomerLocations(Username,City,State,CustomerLocationsID) VALUES (?,?,?,?)'''
+
+    cur = conn.cursor()
+    cur.execute(sqlCommand, customer_locations_data)
+    conn.commit()
+
+def create_diet(database_file, diet_data):
+    conn = sqlite3.connect(database_file)
+
+    sqlCommand = '''INSERT INTO Diet(DietName, CustomerUsername, CalorieLimit) VALUES (?,?,?)'''
+
+    cur = conn.cursor()
+    cur.execute(sqlCommand, diet_data)
+    conn.commit()
+
+def create_adhere_to(database_file, adhere_to_data):
+    conn = sqlite3.connect(database_file)
+
+    sqlCommand = '''INSERT INTO AdhereTo(DietName, FoodID) VALUES (?,?)'''
+
+    cur = conn.cursor()
+    cur.execute(sqlCommand, adhere_to_data)
+    conn.commit()
+
+def create_diet_restricted_type(database_file, restricted_type_data):
+    conn = sqlite3.connect(database_file)
+
+    sqlCommand = '''INSERT INTO DietRestrictedTypes(DietName, RestrictedTypeName) VALUES (?,?)'''
+
+    cur = conn.cursor()
+    cur.execute(sqlCommand, restricted_type_data)
+    conn.commit()
+
+def create_food(database_file, food_data):
+    conn = sqlite3.connect(database_file)
+
+    sqlCommand = '''INSERT INTO Food(ID, CaloriesPerServing, Name, Price, QuanitityInStock, InStock) VALUES (?,?,?,?,?,?)'''
+
+    cur = conn.cursor()
+    cur.execute(sqlCommand, food_data)
+    conn.commit()
+
+def create_food_type(database_file, food_type_data):
+    conn = sqlite3.connect(database_file)
+
+    sqlCommand = '''INSERT INTO FoodTypes(FoodID, FoodTypeName) VALUES (?,?)'''
+
+    cur = conn.cursor()
+    cur.execute(sqlCommand, food_type_data)
+    conn.commit()
+
+def create_track_amount(database_file, track_amount_data):
+    conn = sqlite3.connect(database_file)
+
+    sqlCommand = '''INSERT INTO TrackAmount(InventoryID, RestaurantUsername) VALUES (?,?)'''
+
+    cur = conn.cursor()
+    cur.execute(sqlCommand, track_amount_data)
+    conn.commit()
+
+def create_restaurant_update(database_file, restaurant_update_data):
+    conn = sqlite3.connect(database_file)
+
+    sqlCommand = '''INSERT INTO RestaurantUpdate(RestaurantUsername, InventoryID) VALUES (?,?)'''
+
+    cur = conn.cursor()
+    cur.execute(sqlCommand, restaurant_update_data)
+    conn.commit()
+
+###################################################################
+# End of insert functions                                         #
+###################################################################
+
+
+###################################################################
+# The following functions are SQL commands for deleting data in   #
+# the various tables of our database. Not all data is deletable.  #
+# We will not allow users to delete their accounts.               #
+###################################################################
+
+def delete_food(database_file, FoodID):
+    conn = sqlite3.connect(database_file)
+
+    sqlCommand = '''DELETE FROM Food WHERE ID=?'''
+    curr = conn.cursor
+
+    curr.execute(sqlCommand, (FoodID,))
+    conn.commit()
+
+# Where DietName is the PK of the Diet table
+def delete_diet(database_file, DietName):
+    conn = sqlite3.connect(database_file)
+
+    sqlCommand = 'DELETE FROM Diet WHERE DietName=?'
+    curr = conn.cursor()
+
+    curr.execute(sqlCommand, (DietName,))
+    conn.commit()
+
+def delete_customer_location(database_file, customerLocationsID):
+    conn = sqlite3.connect(database_file)
+
+    sqlCommand = 'DELTE FROM CustomerLocations WHERE customerLocationsID=?'
+
+    curr = conn.cursor()
+
+    curr.execute(sqlCommand, (customerLocationsID,))
+    conn.commit()
+
+
+###################################################################
+# End of delete functions                                         #
+###################################################################
+
 initialize_database("testDatabase.db")
-
-

@@ -43,8 +43,6 @@ def initialize_database(database_file):
                 PhoneNumber TEXT NOT NULL
             )""")
 
-        # Creates menu update table
-        # Foreign key references to 
         create_table(database, """
             CREATE TABLE IF NOT EXISTS MenuUpdate (
                 LastUpdated TEXT PRIMARY KEY,

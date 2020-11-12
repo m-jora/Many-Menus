@@ -275,6 +275,7 @@ def create_restaurant_update(database_file, restaurant_update_data):
 # We will not allow users to delete their accounts.               #
 ###################################################################
 
+# @param FoodID: FoodID is the PK of the Food table
 def delete_food(database_file, FoodID):
     conn = sqlite3.connect(database_file)
 
@@ -284,7 +285,7 @@ def delete_food(database_file, FoodID):
     curr.execute(sqlCommand, (FoodID,))
     conn.commit()
 
-# Where DietName is the PK of the Diet table
+# @param DietName: Dietname is the PK of the Diet table
 def delete_diet(database_file, DietName):
     conn = sqlite3.connect(database_file)
 
@@ -294,6 +295,7 @@ def delete_diet(database_file, DietName):
     curr.execute(sqlCommand, (DietName,))
     conn.commit()
 
+# @param customerLocationsID: customerLocationsID is the PK of CustomerLocation
 def delete_customer_location(database_file, customerLocationsID):
     conn = sqlite3.connect(database_file)
 
@@ -306,6 +308,17 @@ def delete_customer_location(database_file, customerLocationsID):
 
 ###################################################################
 # End of delete functions                                         #
+###################################################################
+
+
+###################################################################
+# Start of update functions                                       #
+###################################################################
+
+
+
+###################################################################
+# End of update functions                                         #
 ###################################################################
 
 initialize_database("testDatabase.db")

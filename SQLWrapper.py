@@ -4,15 +4,13 @@ from sqlite3 import Error
 # Purpose: Connects to an existing database file
 # @param db_file: an existing database file to connect to
 def create_connection(db_file):
-    conn = None
-
     try:
         conn = sqlite3.connect(db_file)
         return conn
     except Error as e:
         print(e)
 
-    return conn
+    return None
 
 # Purpose: Creates a table in a connected database
 # @param conn: the database we are connected to

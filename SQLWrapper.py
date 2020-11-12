@@ -22,14 +22,12 @@ def create_table(conn, create_table_sql):
     except Error as e:
         print(e)
 
-
 # Purpose: Creates the database for the Many Menus GUI
 def initialize_database(database_file):
     
     database = create_connection(database_file)
 
     with database:
-
         create_table(database, """
             CREATE TABLE IF NOT EXISTS Restaurant (
                 State TEXT NOT NULL,
@@ -266,10 +264,10 @@ def create_restaurant_update(database_file, restaurant_update_data):
     cur.execute(sqlCommand, restaurant_update_data)
     conn.commit()
 
+    
 ###################################################################
 # End of insert functions                                         #
 ###################################################################
-
 
 ###################################################################
 # The following functions are SQL commands for deleting data in   #
@@ -305,7 +303,6 @@ def delete_customer_location(database_file, customerLocationsID):
 
     curr.execute(sqlCommand, (customerLocationsID,))
     conn.commit()
-
 
 ###################################################################
 # End of delete functions                                         #

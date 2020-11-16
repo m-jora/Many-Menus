@@ -29,7 +29,7 @@ def initialize_database(database_file):
 
     with database:
         create_table(database, """
-            CREATE TABLE IF NOT EXISTS Restaurant (
+            CREATE TABLE IF NOT EXISTS Restaurant(
                 State TEXT NOT NULL,
                 City TEXT NOT NULL,
                 StreetAddress TEXT NOT NULL,
@@ -40,7 +40,7 @@ def initialize_database(database_file):
             )""")
 
         create_table(database, """
-            CREATE TABLE IF NOT EXISTS MenuUpdate (
+            CREATE TABLE IF NOT EXISTS MenuUpdate(
                 LastUpdated TEXT PRIMARY KEY,
                 MenuID TEXT,
                 RestaurantUsername TEXT,
@@ -66,6 +66,7 @@ def initialize_database(database_file):
         create_table(database, """
             CREATE TABLE IF NOT EXISTS Customer(
                 Username TEXT PRIMARY KEY,
+                Name TEXT NOT NULL,
                 Password TEXT NOT NULL,
                 Birthday TEXT NOT NULL,
                 Age TEXT NOT NULL
@@ -73,10 +74,11 @@ def initialize_database(database_file):
 
         create_table(database, """
             CREATE TABLE IF NOT EXISTS CustomerLocations(
-                Username TEXT PRIMARY KEY,
+                Username TEXT,
                 City TEXT NOT NULL,
                 State TEXT NOT NULL,
-                FOREIGN KEY(Username) REFERENCES Username(Restaurant)
+                CustomerLocationsID TEXT PRIMARY KEY,
+                FOREIGN KEY(Username) REFERENCES Username(Customer)
             )""")
 
         create_table(database, """
@@ -91,6 +93,7 @@ def initialize_database(database_file):
             CREATE TABLE IF NOT EXISTS AdhereTo(
                 DietName TEXT,
                 FoodID TEXT,
+                PRIMARY KEY(DietName, FoodID),
                 FOREIGN KEY(DietName) REFERENCES DietName(Diet),
                 FOREIGN KEY(FoodID) REFERENCES ID(Food)
             )""")
@@ -104,10 +107,12 @@ def initialize_database(database_file):
 
         create_table(database, """
             CREATE TABLE IF NOT EXISTS Food(
-                ID TEXT PRIMARY KEY,
+                FoodID TEXT PRIMARY KEY,
                 CaloriesPerServing INTEGER,
                 Name TEXT,
-                Price TEXT
+                Price TEXT,
+                QuantityInStock INTEGER,
+                InStock INTEGER
         )""") 
 
         create_table(database, """
@@ -121,7 +126,8 @@ def initialize_database(database_file):
             CREATE TABLE IF NOT EXISTS TrackAmount(
                 InventoryID TEXT,
                 RestaurantUsername TEXT,
-                FOREIGN KEY(RestaurantUsername) REFERENCES RestaurantUsername(Restaurant)
+                FOREIGN KEY(RestaurantUsername) REFERENCES RestaurantUsername(Restaurant),
+                FOREIGN KEY(InventoryID) REFERENCES InventoryID(Inventory)
         )""")
 
         create_table(database, """
@@ -130,7 +136,6 @@ def initialize_database(database_file):
                 RestaurantUsername TEXT,
                 FOREIGN KEY(RestaurantUsername) REFERENCES RestaurantUsername(Restaurant)
         )""")
-
 
         create_table(database, """
             CREATE TABLE IF NOT EXISTS RestaurantUpdate(
@@ -186,7 +191,7 @@ def create_browse(database_file, browse_data):
 def create_customer(database_file, customer_data):
     conn = sqlite3.connect(database_file)
 
-    sqlCommand = '''INSERT INTO Customer(Username,Password,Name,Birthday,Age) VALUES (?,?,?,?,?)'''
+    sqlCommand = '''INSERT INTO Customer(Username,Name,Password,Birthday,Age) VALUES (?,?,?,?,?)'''
 
     cur = conn.cursor()
     cur.execute(sqlCommand, customer_data)
@@ -231,7 +236,7 @@ def create_diet_restricted_type(database_file, restricted_type_data):
 def create_food(database_file, food_data):
     conn = sqlite3.connect(database_file)
 
-    sqlCommand = '''INSERT INTO Food(ID, CaloriesPerServing, Name, Price, QuanitityInStock, InStock) VALUES (?,?,?,?,?,?)'''
+    sqlCommand = '''INSERT INTO Food(FoodID, CaloriesPerServing,Name,Price,QuantityInStock,InStock) VALUES (?,?,?,?,?,?)'''
 
     cur = conn.cursor()
     cur.execute(sqlCommand, food_data)
@@ -264,7 +269,6 @@ def create_restaurant_update(database_file, restaurant_update_data):
     cur.execute(sqlCommand, restaurant_update_data)
     conn.commit()
 
-    
 ###################################################################
 # End of insert functions                                         #
 ###################################################################
@@ -279,8 +283,8 @@ def create_restaurant_update(database_file, restaurant_update_data):
 def delete_food(database_file, FoodID):
     conn = sqlite3.connect(database_file)
 
-    sqlCommand = '''DELETE FROM Food WHERE ID=?'''
-    curr = conn.cursor
+    sqlCommand = '''DELETE FROM Food WHERE FoodID = ?'''
+    curr = conn.cursor()
 
     curr.execute(sqlCommand, (FoodID,))
     conn.commit()
@@ -289,7 +293,7 @@ def delete_food(database_file, FoodID):
 def delete_diet(database_file, DietName):
     conn = sqlite3.connect(database_file)
 
-    sqlCommand = 'DELETE FROM Diet WHERE DietName=?'
+    sqlCommand = 'DELETE FROM Diet WHERE DietName = ?'
     curr = conn.cursor()
 
     curr.execute(sqlCommand, (DietName,))
@@ -299,26 +303,174 @@ def delete_diet(database_file, DietName):
 def delete_customer_location(database_file, customerLocationsID):
     conn = sqlite3.connect(database_file)
 
-    sqlCommand = 'DELTE FROM CustomerLocations WHERE customerLocationsID=?'
+    sqlCommand = 'DELETE FROM CustomerLocations WHERE customerLocationsID=?'
 
     curr = conn.cursor()
 
     curr.execute(sqlCommand, (customerLocationsID,))
     conn.commit()
 
+# @param MenuID: MenuID is the PK of the Menu table
+def delete_menu(database_file, MenuID):
+    conn = sqlite3.connect(database_file)
+
+    sqlCommand = 'DELETE FROM Menu WHERE MenuID=?'
+
+    curr = conn.cursor()
+
+    curr.execute(sqlCommand, (MenuID,))
+    conn.commit()
+
 ###################################################################
 # End of delete functions                                         #
 ###################################################################
-
 
 ###################################################################
 # Start of update functions                                       #
 ###################################################################
 
+# @param Username: the primary key for the restaurant table
+# @param updatedRestaurantTuple: the new tuple to insert into the table
+def update_restaurant_info(database_file, Username, updated_restaurant_tuple):
+    conn = sqlite3.connect(database_file)
 
+    sql = '''UPDATE Restaurant 
+                SET State = ?,
+                City = ?,
+                StreetAddress = ?,
+                Password = ?,
+                Username = ?,
+                StoreName = ?,
+                PhoneNumber =?
+            WHERE Username = ''' + Username 
+
+    curr = conn.cursor()
+    curr.execute(sql, updated_restaurant_tuple)
+
+    conn.commit()
+
+# @param FoodID: the primary key for the food table
+# @param updated_food_tuple: the datavalue to replace the previous element
+def update_food(database_file, FoodID, updated_food_tuple):
+    conn = sqlite3.connect(database_file)
+
+    sql = '''UPDATE Food
+                SET FoodID=?,
+                CaloriesPerServing=?,
+                Name=?,
+                Price=?,
+                QuantityInStock=?,
+                InStock=?
+            WHERE FoodID = ''' + FoodID
+
+    curr = conn.cursor()
+    curr.execute(sql, updated_food_tuple)
+
+    conn.commit()
 
 ###################################################################
 # End of update functions                                         #
 ###################################################################
+
+###################################################################
+# Query functions. These will be used to access information in    #
+# the various tables.                                             #
+###################################################################
+
+# Purpose: Gets the password for an associated customerusername.
+# Will be used to verify a login.
+def get_password_for_user(database_file, customer_username):
+    conn = sqlite3.connect(database_file)
+    
+    curr = conn.cursor()
+    curr.execute("SELECT Password FROM Customer WHERE Username=?", (customer_username,))
+
+    password = curr.fetchone()
+
+    if(password == None):
+        return("USER DOES NOT EXIST")
+    else:
+        return(password[0])
+
+# Purpose: Gets the password for an associated restaurant
+def get_password_for_restaurant_username(database_file, restaurant_username):
+    conn = sqlite3.connect(database_file)
+
+    curr = conn.cursor()
+    curr.execute("SELECT Password FROM Restaurant WHERE Username=?", (restaurant_username,))
+
+    password = curr.fetchone()
+
+    if(password == None):
+        return("USER DOES NOT EXIST")
+    else:
+        return(password[0])
+
+# Purpose: Gets the information about a certain food with a given ID
+def get_info_about_food(database_file, food_id):
+    conn = sqlite3.connect(database_file)
+
+    curr = conn.cursor()
+    curr.execute("SELECT * FROM Food WHERE FoodID=?", (food_id,))
+
+    food_info = curr.fetchone()
+
+    return(food_info)
+
+# Purpose: Gets all the locations associated with a given username
+def get_customer_locations(database_file, username):
+    conn = sqlite3.connect(database_file)
+
+    curr = conn.cursor()
+    curr. execute("SELECT * FROM CustomerLocations WHERE Username=?", (username,))
+
+    customer_location_info = curr.fetchall()
+
+    return(customer_location_info)
+
+# Purpose: Gets the menuID for a certain restaurant with a given username
+def get_menu(database_file, restaurant_username):
+    conn = sqlite3.connect(database_file)
+
+    curr = conn.cursor()
+    curr.execute("SELECT * FROM Menu WHERE RestaurantUsername=", (restaurant_username,))
+
+    menu_info = curr.fetchall()
+
+    return(menu_info)
+
+# Purpose: Gets all the diets for a given customer username
+def get_diet_for_user(database_file, customer_username):
+    conn = sqlite3.connect(database_file)
+
+    curr = conn.cursor()
+    curr.execute("SELECT * FROM Diet WHERE Username=?", (customer_username,))
+
+    diet_info = curr.fetchall()
+
+    return(diet_info)
+
+# Purpose: Gets all the information for a restaurant with a given username
+def get_restaurant_info(database_file, restaurant_username):
+    conn = sqlite3.connect(database_file)
+
+    curr = conn.cursor()
+    curr.execute("SELECT State, City, StreetAddress, StoreName FROM Restaurant WHERE Username=?", (restaurant_username,))
+
+    store_info = curr.fetchall()
+
+    return(store_info)
+
+# Purpose: Gets food that adheres to a certain diet
+def get_adhere_to(database_file, diet_name):
+    conn = sqlite3.connect(database_file)
+
+    curr = conn.cursor()
+    curr.execute("SELECT FoodID FROM AdhereTo WHERE DietName=?", (diet_name,))
+
+    food_for_diet = curr.fetchall()
+
+    return(food_for_diet)
+
 
 initialize_database("testDatabase.db")

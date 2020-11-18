@@ -1,4 +1,4 @@
-import SQLWrapper
+import SQLWrapper as SQLWrapper
 
 # Purpose: Validates a password for a given user
 def validate_password(database_file, username, entered_password):

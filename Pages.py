@@ -27,4 +27,7 @@ class Login:
         return
 
 
+class Browse:
+    def __init__(self):
+        return 
  

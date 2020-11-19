@@ -25,42 +25,37 @@ class Application(tk.Tk):
 class Login(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
-        # tk.Tk.Title(self, 'Login')
-        # self.tk.Title("Login")
-        #tk.Label(self, text = "This is the start page.").pack()
+        self.configure(bg = '#6FA8DD')
+
         def submit(event = None):
             print(user_entry.get())
             print(pass_entry.get())
 
-            #valid = validate_password(dbfile, user_entry.get(), pass_entry.get())
+            valid = validate_password('TestDatabase.db', user_entry.get(), pass_entry.get())
 
             user_entry.delete(0, tk.END)
             pass_entry.delete(0, tk.END)
         
-        self.bind('<Return>', submit)
-        self.configure(bg = '#6FA8DD')
-
-
-
-        #text box labels
+        
+        # text box labels
         user_label = tk.Label(self, text = 'Username: ', bg = '#6FA8DD')
         pass_label = tk.Label(self, text = 'Password: ', bg = '#6FA8DD')
 
-        #buttons
+        # buttons
         login = tk.Button(self, text = 'Login', width = 8, height = 2, command = submit)
         create_user = tk.Button(self, text = 'Create new user account', wraplength = 100, justify = tk.CENTER, width = 14, height = 3, command = lambda: master.switch_frame(CustomerCreateAccount))
         create_res = tk.Button(self, text = 'Create new restaurant account', wraplength = 100, justify = tk.CENTER, width = 14, height = 3, command = lambda: master.switch_frame(RestaurantCreateAccount))
 
-        #text boxes
+        # text boxes
         user_entry = tk.Entry(self, width = 35, relief = tk.GROOVE)
         pass_entry = tk.Entry(self, width = 35, relief = tk.GROOVE)
 
-        #Many Menus logo
+        # Many Menus logo
         load = Image.open('many_menus.png').resize((326, 212), Image.ANTIALIAS)
         self.render = ImageTk.PhotoImage(load)
         img = tk.Label(image = self.render, borderwidth = 3, bg = 'black')
 
-
+        # placing things
         img.place(relx = .5, rely = .02, anchor = tk.N)
         user_label.place(relx = .3, rely = .4, anchor = tk.N)
         pass_label.place(relx = .299, rely = .45, anchor = tk.N)
@@ -81,13 +76,13 @@ class RestaurantCreateAccount(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
 
-        tk.Label(self, text = "This is the restaurant create account page.").place(anchor = tk.N)
+        tk.Label(self, text = "This is the restaurant create account page.").place(relx = .5, rely = .4, anchor = tk.CENTER)
 
 class CustomerCreateAccount(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
         
-        tk.Label(self, text = "This is the customer create account page.").place(anchor = tk.N)
+        tk.Label(self, text = "This is the customer create account page.").place(relx = .3, rely = .3, anchor = tk.CENTER)
 
 class RestaurantUpdateInfo(tk.Frame):
     def __init__(self, master):

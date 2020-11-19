@@ -8,6 +8,9 @@ class Application(tk.Tk):
         self._frame = None
         self.switch_frame(Login)
         self.title("Many Menus")
+        self.minsize(600,700)
+        self.maxsize(600,700)
+        self.configure(bg = '#6FA8DD')
 
     def switch_frame(self, frame_class):
         new_frame = frame_class(self)

@@ -31,7 +31,13 @@ class Login(tk.Frame):
             print(user_entry.get())
             print(pass_entry.get())
 
-            valid = validate_password('TestDatabase.db', user_entry.get(), pass_entry.get())
+            #valid = validate_password('TestDatabase.db', user_entry.get(), pass_entry.get())
+            valid = False
+            if not valid:
+                invalid = tk.Label(self, text = 'Invalid username / Password')
+                invalid.place(relx = .5, rely = .7, anchor = tk.N)
+                invalid.after(3000, invalid.destroy)
+
 
             user_entry.delete(0, tk.END)
             pass_entry.delete(0, tk.END)
@@ -48,7 +54,7 @@ class Login(tk.Frame):
 
         # text boxes
         user_entry = tk.Entry(self, width = 35, relief = tk.GROOVE)
-        pass_entry = tk.Entry(self, width = 35, relief = tk.GROOVE)
+        pass_entry = tk.Entry(self, width = 35, relief = tk.GROOVE, show = '•')
 
         # Many Menus logo
         load = Image.open('many_menus.png').resize((326, 212), Image.ANTIALIAS)
@@ -75,8 +81,12 @@ class Login(tk.Frame):
 class RestaurantCreateAccount(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
-
+        self.configure(bg = '#6FA8DD')
         tk.Label(self, text = "This is the restaurant create account page.").place(relx = .5, rely = .4, anchor = tk.CENTER)
+
+
+
+
 
 class CustomerCreateAccount(tk.Frame):
     def __init__(self, master):

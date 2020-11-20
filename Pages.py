@@ -84,8 +84,47 @@ class RestaurantCreateAccount(tk.Frame):
         self.configure(bg = '#6FA8DD')
         tk.Label(self, text = "This is the restaurant create account page.").place(relx = .5, rely = .4, anchor = tk.CENTER)
 
+        # wayyyyy too many labels for this screen
+        title = tk.Label(self, text = 'Create Restaurant Account', bg = '#6FA8DD')
+        user_label = tk.Label(self, text = 'Enter username:', bg = '#6FA8DD')
+        info = tk.Label(self, text = '(Username must be at least 6 characters)', bg = '#6FA8DD')
+        pass_label = tk.Label(self, text = 'Enter password:', bg = '#6FA8DD')
+        pass_info = tk.Label(self, text = '(Password must be at least 8 characters)', bg = '#6FA8DD')
+        street_label = tk.Label(self, text = 'Enter street addresss:', bg = '#6FA8DD')
+        city_label = tk.Label(self, text = 'City:', bg = '#6FA8DD')
+        state_label = tk.Label(self, text = 'State:', bg = '#6FA8DD')
+        ex = tk.Label(self, text = '(ex: MO)', bg = '#6FA8DD')
+        phone = tk.Label(self, text = 'Enter phone number:', bg = '#6FA8DD')
+        phone_ex = tk.Label(self, text = '(ex: 123-456-7890)', bg = '#6FA8DD')
 
 
+        # buttons... only 2 on this screen
+        finish = tk.Button(self, text = 'Finish creating account')
+        back  = tk.Button(self, text = 'Back to login page', command = lambda: master.switch_frame(Login))
+
+
+        # text boxes now... too many once again
+        user_entry = tk.Entry(self, relief = tk.GROOVE)
+        pass_entry = tk.Entry(self, relief = tk.GROOVE)
+        street_entry = tk.Entry(self, relief = tk.GROOVE)
+        city_entry = tk.Entry(self, relief = tk.GROOVE)
+        state_entry = tk.Entry(self, relief = tk.GROOVE)
+        phone_entry = tk.Entry(self, relief = tk.GROOVE)
+
+
+        # Many Menus Logo
+        load = Image.open('many_menus.png').resize((326, 212), Image.ANTIALIAS)
+        self.render = ImageTk.PhotoImage(load)
+        img = tk.Label(image = self.render, borderwidth = 3, bg = 'black')
+
+
+        # placing things
+        img.place(relx = .5, rely = .02, anchor = tk.N)
+
+
+
+
+        back.place(relx = .5, rely = .5, anchor = tk.N)
 
 
 class CustomerCreateAccount(tk.Frame):

@@ -9,6 +9,7 @@ class Application(tk.Tk):
         self._frame = None
         self.switch_frame(Login)
         self.title("Many Menus")
+        self.iconbitmap('pepper.ico')
         self.minsize(600,700)
         self.maxsize(600,700)
 
@@ -82,10 +83,10 @@ class RestaurantCreateAccount(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
         self.configure(bg = '#6FA8DD')
-        tk.Label(self, text = "This is the restaurant create account page.").place(relx = .5, rely = .4, anchor = tk.CENTER)
+        #tk.Label(self, text = "This is the restaurant create account page.").place(relx = .5, rely = .4, anchor = tk.CENTER)
 
         # wayyyyy too many labels for this screen
-        title = tk.Label(self, text = 'Create Restaurant Account', bg = '#6FA8DD')
+        title = tk.Label(self, text = 'Create Restaurant Account', bg = '#6FA8DD', font = ('helvetica', 14, 'bold'))
         user_label = tk.Label(self, text = 'Enter username:', bg = '#6FA8DD')
         info = tk.Label(self, text = '(Username must be at least 6 characters)', bg = '#6FA8DD')
         pass_label = tk.Label(self, text = 'Enter password:', bg = '#6FA8DD')
@@ -104,7 +105,7 @@ class RestaurantCreateAccount(tk.Frame):
 
 
         # text boxes now... too many once again
-        user_entry = tk.Entry(self, relief = tk.GROOVE)
+        user_entry = tk.Entry(self, relief = tk.GROOVE, width = 35)
         pass_entry = tk.Entry(self, relief = tk.GROOVE)
         street_entry = tk.Entry(self, relief = tk.GROOVE)
         city_entry = tk.Entry(self, relief = tk.GROOVE)
@@ -120,11 +121,13 @@ class RestaurantCreateAccount(tk.Frame):
 
         # placing things
         img.place(relx = .5, rely = .02, anchor = tk.N)
+        title.place(relx = .5, rely = .34, anchor = tk.N)
+        
+        user_label.place(relx = .27, rely = .4, anchor = tk.N)
+        user_entry.place(relx = .55, rely = .403, anchor = tk.N)
 
 
-
-
-        back.place(relx = .5, rely = .5, anchor = tk.N)
+        back.place(relx = .5, rely = .8, anchor = tk.N)
 
 
 class CustomerCreateAccount(tk.Frame):

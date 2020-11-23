@@ -88,7 +88,7 @@ class RestaurantCreateAccount(tk.Frame):
         # wayyyyy too many labels for this screen
         title = tk.Label(self, text = 'Create Restaurant Account', bg = '#6FA8DD', font = ('helvetica', 14, 'bold'))
         user_label = tk.Label(self, text = 'Enter username:', bg = '#6FA8DD')
-        info = tk.Label(self, text = '(Username must be at least 6 characters)', bg = '#6FA8DD')
+        user_info = tk.Label(self, text = '(Username must be at least 6 characters)', bg = '#6FA8DD')
         pass_label = tk.Label(self, text = 'Enter password:', bg = '#6FA8DD')
         pass_info = tk.Label(self, text = '(Password must be at least 8 characters)', bg = '#6FA8DD')
         street_label = tk.Label(self, text = 'Enter street addresss:', bg = '#6FA8DD')
@@ -106,8 +106,8 @@ class RestaurantCreateAccount(tk.Frame):
 
         # text boxes now... too many once again
         user_entry = tk.Entry(self, relief = tk.GROOVE, width = 35)
-        pass_entry = tk.Entry(self, relief = tk.GROOVE)
-        street_entry = tk.Entry(self, relief = tk.GROOVE)
+        pass_entry = tk.Entry(self, relief = tk.GROOVE, width = 35)
+        street_entry = tk.Entry(self, relief = tk.GROOVE, width = 33)
         city_entry = tk.Entry(self, relief = tk.GROOVE)
         state_entry = tk.Entry(self, relief = tk.GROOVE)
         phone_entry = tk.Entry(self, relief = tk.GROOVE)
@@ -123,9 +123,16 @@ class RestaurantCreateAccount(tk.Frame):
         img.place(relx = .5, rely = .02, anchor = tk.N)
         title.place(relx = .5, rely = .34, anchor = tk.N)
         
-        user_label.place(relx = .27, rely = .4, anchor = tk.N)
-        user_entry.place(relx = .55, rely = .403, anchor = tk.N)
+        user_label.place(relx = .31, rely = .4, anchor = tk.N)
+        user_entry.place(relx = .58, rely = .403, anchor = tk.N)
+        user_info.place(relx = .52, rely = .434, anchor = tk.N)
 
+        pass_label.place(relx = .31, rely = .47, anchor = tk.N)
+        pass_entry.place(relx = .58, rely = .473, anchor = tk.N)
+        pass_info.place(relx = .52, rely = .505, anchor = tk.N)
+
+        street_label.place(relx = .33, rely = .54, anchor = tk.N)
+        street_entry.place(relx = .61, rely = .543, anchor = tk.N)
 
         back.place(relx = .5, rely = .8, anchor = tk.N)
 

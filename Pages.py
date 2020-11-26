@@ -29,20 +29,18 @@ class Login(tk.Frame):
         self.configure(bg = '#6FA8DD')
 
         def submit():
-            print(user_entry.get())
-            print(pass_entry.get())
+            valid = validate_res_password('TestDatabase.db', user_entry.get(), pass_entry.get())
 
-            #valid = validate_password('TestDatabase.db', user_entry.get(), pass_entry.get())
-            valid = False
+            user_entry.delete(0, tk.END)
+            pass_entry.delete(0, tk.END)
+
             if not valid:
                 invalid = tk.Label(self, text = 'Invalid username / Password')
                 invalid.place(relx = .5, rely = .7, anchor = tk.N)
                 invalid.after(3000, invalid.destroy)
-
-
-            user_entry.delete(0, tk.END)
-            pass_entry.delete(0, tk.END)
-        
+                
+            else:
+                master.switch_frame(CustomerCreateAccount)
         
         # text box labels
         user_label = tk.Label(self, text = 'Username: ', bg = '#6FA8DD')
@@ -87,13 +85,14 @@ class RestaurantCreateAccount(tk.Frame):
 
         # submit user account
         def submit():
-            valid = SQLWrapper.create_restaurant('TestDatabase.db', (state_entry.get(), city_entry.get(), street_entry.get(), pass_entry.get(), user_entry.get(), store_entry.get(), phone_entry.get()))
-            if valid:
+            SQLWrapper.create_restaurant('TestDatabase.db', (state_entry.get(), city_entry.get(), street_entry.get(), pass_entry.get(), user_entry.get(), store_entry.get(), phone_entry.get()))
+            
+            '''if valid:
                 print('yee haw')
             if not valid:
                 invalid = tk.Label(self, text = 'Invalid Field')
                 invalid.place(relx = .5, rely = .85, anchor = tk.N)
-                invalid.after(3000, invalid.destroy)
+                invalid.after(3000, invalid.destroy)'''
 
         # wayyyyy too many labels for this screen
         title = tk.Label(self, text = 'Create Restaurant Account', bg = '#6FA8DD', font = ('helvetica', 14, 'bold'))
@@ -208,6 +207,14 @@ def validate_password(database_file, username, entered_password):
     else:
         return True
 
-    
+
+def validate_res_password(database_file, username, entered_password):
+    actualPassword = SQLWrapper.get_password_for_restaurant_username(database_file, username)
+
+    if actualPassword != entered_password:
+        return False
+    else:
+        return True
+
 app = Application()
 app.mainloop()

@@ -28,7 +28,7 @@ class Login(tk.Frame):
         tk.Frame.__init__(self, master)
         self.configure(bg = '#6FA8DD')
 
-        def submit(event = None):
+        def submit():
             print(user_entry.get())
             print(pass_entry.get())
 
@@ -85,8 +85,19 @@ class RestaurantCreateAccount(tk.Frame):
         self.configure(bg = '#6FA8DD')
         #tk.Label(self, text = "This is the restaurant create account page.").place(relx = .5, rely = .4, anchor = tk.CENTER)
 
+        # submit user account
+        def submit():
+            valid = SQLWrapper.create_restaurant('TestDatabase.db', (state_entry.get(), city_entry.get(), street_entry.get(), pass_entry.get(), user_entry.get(), store_entry.get(), phone_entry.get()))
+            if valid:
+                print('yee haw')
+            if not valid:
+                invalid = tk.Label(self, text = 'Invalid Field')
+                invalid.place(relx = .5, rely = .85, anchor = tk.N)
+                invalid.after(3000, invalid.destroy)
+
         # wayyyyy too many labels for this screen
         title = tk.Label(self, text = 'Create Restaurant Account', bg = '#6FA8DD', font = ('helvetica', 14, 'bold'))
+        storename_label = tk.Label(self, text = 'Enter Store name:', bg = '#6FA8DD')
         user_label = tk.Label(self, text = 'Enter username:', bg = '#6FA8DD')
         user_info = tk.Label(self, text = '(Username must be at least 6 characters)', bg = '#6FA8DD')
         pass_label = tk.Label(self, text = 'Enter password:', bg = '#6FA8DD')
@@ -94,23 +105,24 @@ class RestaurantCreateAccount(tk.Frame):
         street_label = tk.Label(self, text = 'Enter street addresss:', bg = '#6FA8DD')
         city_label = tk.Label(self, text = 'City:', bg = '#6FA8DD')
         state_label = tk.Label(self, text = 'State:', bg = '#6FA8DD')
-        ex = tk.Label(self, text = '(ex: MO)', bg = '#6FA8DD')
-        phone = tk.Label(self, text = 'Enter phone number:', bg = '#6FA8DD')
+        state_ex = tk.Label(self, text = '(ex: MO)', bg = '#6FA8DD')
+        phone_label = tk.Label(self, text = 'Enter phone number:', bg = '#6FA8DD')
         phone_ex = tk.Label(self, text = '(ex: 123-456-7890)', bg = '#6FA8DD')
 
 
         # buttons... only 2 on this screen
-        finish = tk.Button(self, text = 'Finish creating account')
+        finish = tk.Button(self, text = 'Finish creating account', height = 3, command = submit)
         back  = tk.Button(self, text = 'Back to login page', command = lambda: master.switch_frame(Login))
 
 
         # text boxes now... too many once again
+        store_entry = tk.Entry(self, relief = tk.GROOVE, width = 35)
         user_entry = tk.Entry(self, relief = tk.GROOVE, width = 35)
-        pass_entry = tk.Entry(self, relief = tk.GROOVE, width = 35)
+        pass_entry = tk.Entry(self, relief = tk.GROOVE, width = 35, show = '•')
         street_entry = tk.Entry(self, relief = tk.GROOVE, width = 33)
-        city_entry = tk.Entry(self, relief = tk.GROOVE)
-        state_entry = tk.Entry(self, relief = tk.GROOVE)
-        phone_entry = tk.Entry(self, relief = tk.GROOVE)
+        city_entry = tk.Entry(self, relief = tk.GROOVE, width = 19)
+        state_entry = tk.Entry(self, relief = tk.GROOVE, width = 4)
+        phone_entry = tk.Entry(self, relief = tk.GROOVE, width = 32)
 
 
         # Many Menus Logo
@@ -123,18 +135,41 @@ class RestaurantCreateAccount(tk.Frame):
         img.place(relx = .5, rely = .02, anchor = tk.N)
         title.place(relx = .5, rely = .34, anchor = tk.N)
         
-        user_label.place(relx = .31, rely = .4, anchor = tk.N)
-        user_entry.place(relx = .58, rely = .403, anchor = tk.N)
-        user_info.place(relx = .52, rely = .434, anchor = tk.N)
+        # store name thingssss
+        storename_label.place(relx = .32, rely = .4, anchor = tk.N)
+        store_entry.place(relx = .58, rely = .403, anchor = tk.N)
 
-        pass_label.place(relx = .31, rely = .47, anchor = tk.N)
-        pass_entry.place(relx = .58, rely = .473, anchor = tk.N)
-        pass_info.place(relx = .52, rely = .505, anchor = tk.N)
+        # all items that have to do with username
+        user_label.place(relx = .31, rely = .443, anchor = tk.N)
+        user_entry.place(relx = .58, rely = .446, anchor = tk.N)
+        user_info.place(relx = .52, rely = .478, anchor = tk.N)
 
-        street_label.place(relx = .33, rely = .54, anchor = tk.N)
-        street_entry.place(relx = .61, rely = .543, anchor = tk.N)
+        # all items for the password
+        pass_label.place(relx = .31, rely = .513, anchor = tk.N)
+        pass_entry.place(relx = .58, rely = .516, anchor = tk.N)
+        pass_info.place(relx = .52, rely = .548, anchor = tk.N)
 
-        back.place(relx = .5, rely = .8, anchor = tk.N)
+        # all items for the street 
+        street_label.place(relx = .33, rely = .583, anchor = tk.N)
+        street_entry.place(relx = .61, rely = .586, anchor = tk.N)
+
+        # all items for city
+        city_label.place(relx = .258, rely = .627, anchor = tk.N)
+        city_entry.place(relx = .4, rely = .628 , anchor = tk.N)
+
+        # all items for state
+        state_label.place(relx = .56, rely = .627, anchor = tk.N)
+        state_entry.place(relx = .623, rely = .628, anchor = tk.N)
+        state_ex.place(relx = .692, rely = .627, anchor = tk.N)
+
+        # all items for phone number
+        phone_label.place(relx = .33, rely = .673, anchor = tk.N)
+        phone_entry.place(relx = .6, rely = .676, anchor = tk.N)
+        phone_ex.place(relx = .5, rely = .707, anchor = tk.N)
+
+        # buttons
+        finish.place(relx = .5, rely = .753, anchor = tk.N)
+        back.place(relx = .5, rely = .843, anchor = tk.N)
 
 
 class CustomerCreateAccount(tk.Frame):

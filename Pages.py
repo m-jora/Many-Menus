@@ -28,32 +28,59 @@ class Login(tk.Frame):
         tk.Frame.__init__(self, master)
         self.configure(bg = '#6FA8DD')
 
-        def submit():
-            valid = validate_res_password('TestDatabase.db', user_entry.get(), pass_entry.get())
+        def submit(res_account, user_account):
 
-            user_entry.delete(0, tk.END)
-            pass_entry.delete(0, tk.END)
-
-            if not valid:
-                invalid = tk.Label(self, text = 'Invalid username / Password')
-                invalid.place(relx = .5, rely = .7, anchor = tk.N)
+            if res_account.get() and user_account.get():
+                invalid = tk.Label(self, text = 'Select only one Checkbox')
+                invalid.place(relx = .5, rely = .76, anchor = tk.N)
                 invalid.after(3000, invalid.destroy)
+
+            elif res_account.get() and not user_account.get():
+                valid = validate_res_password('TestDatabase.db', user_entry.get(), pass_entry.get())
+
+                if not valid:
+                    invalid = tk.Label(self, text = 'Invalid username / Password')
+                    invalid.place(relx = .5, rely = .76, anchor = tk.N)
+                    invalid.after(3000, invalid.destroy)
                 
-            else:
-                master.switch_frame(CustomerCreateAccount)
+                else:
+                    master.switch_frame(RestaurantUpdateMenu)
         
+            elif not res_account.get() and user_account.get():
+                valid = validate_password('TestDatabase.db', user_entry.get(), pass_entry.get())
+
+                if not valid:
+                    invalid = tk.Label(self, text = 'Invalid username / password')
+                    invalid.place(relx = .5, rely = .76, anchor = tk.N)
+                    invalid.after(3000, invalid.destroy)
+
+                else:
+                    master.switch_frame(Browse)
+            
+            elif not res_account.get() and not user_account.get():
+                invalid = tk.Label(self, text = 'Please select account type')
+                invalid.place(relx = .5, rely = .76, anchor = tk.N)
+                invalid.after(3000, invalid.destroy)
+
         # text box labels
         user_label = tk.Label(self, text = 'Username: ', bg = '#6FA8DD')
         pass_label = tk.Label(self, text = 'Password: ', bg = '#6FA8DD')
+        login_type = tk.Label(self, text = 'Account Type:', bg = '#6FA8DD')
 
         # buttons
-        login = tk.Button(self, text = 'Login', width = 8, height = 2, command = submit)
+        login = tk.Button(self, text = 'Login', width = 8, height = 2, command = lambda: submit(res_account, user_account))
         create_user = tk.Button(self, text = 'Create new user account', wraplength = 100, justify = tk.CENTER, width = 14, height = 3, command = lambda: master.switch_frame(CustomerCreateAccount))
         create_res = tk.Button(self, text = 'Create new restaurant account', wraplength = 100, justify = tk.CENTER, width = 14, height = 3, command = lambda: master.switch_frame(RestaurantCreateAccount))
 
         # text boxes
         user_entry = tk.Entry(self, width = 35, relief = tk.GROOVE)
         pass_entry = tk.Entry(self, width = 35, relief = tk.GROOVE, show = '•')
+
+        # checkbox
+        res_account = tk.IntVar()
+        user_account = tk.IntVar()
+        res_check = tk.Checkbutton(self, text = 'Restaurant', variable = res_account, bg = '#6FA8DD', activebackground = '#6FA8DD')
+        user_check = tk.Checkbutton(self, text = 'User', variable = user_account, bg = '#6FA8DD', activebackground = '#6FA8DD')
 
         # Many Menus logo
         load = Image.open('many_menus.png').resize((326, 212), Image.ANTIALIAS)
@@ -67,10 +94,14 @@ class Login(tk.Frame):
 
         user_entry.place(relx = .55, rely = .403, anchor = tk.N)
         pass_entry.place(relx = .55, rely = .452, anchor = tk.N)
+        login_type.place(relx = .311, rely = .5, anchor = tk.N)
+        
+        res_check.place(relx = .47, rely = .498, anchor = tk.N)
+        user_check.place(relx = .63, rely = .498, anchor = tk.N)
 
-        login.place(relx = .5, rely = .5, anchor = tk.N)
-        create_res.place(relx = .65, rely = .6, anchor = tk.N)
-        create_user.place(relx = .35, rely = .6, anchor = tk.N)
+        login.place(relx = .5, rely = .57, anchor = tk.N)
+        create_res.place(relx = .65, rely = .67, anchor = tk.N)
+        create_user.place(relx = .35, rely = .67, anchor = tk.N)
 
 
         # This is an example of how we will transfer control from one page to another
@@ -81,18 +112,11 @@ class RestaurantCreateAccount(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
         self.configure(bg = '#6FA8DD')
-        #tk.Label(self, text = "This is the restaurant create account page.").place(relx = .5, rely = .4, anchor = tk.CENTER)
 
         # submit user account
         def submit():
             SQLWrapper.create_restaurant('TestDatabase.db', (state_entry.get(), city_entry.get(), street_entry.get(), pass_entry.get(), user_entry.get(), store_entry.get(), phone_entry.get()))
-            
-            '''if valid:
-                print('yee haw')
-            if not valid:
-                invalid = tk.Label(self, text = 'Invalid Field')
-                invalid.place(relx = .5, rely = .85, anchor = tk.N)
-                invalid.after(3000, invalid.destroy)'''
+            master.switch_frame(RestaurantUpdateMenu)
 
         # wayyyyy too many labels for this screen
         title = tk.Label(self, text = 'Create Restaurant Account', bg = '#6FA8DD', font = ('helvetica', 14, 'bold'))
@@ -174,8 +198,80 @@ class RestaurantCreateAccount(tk.Frame):
 class CustomerCreateAccount(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
+        self.configure(bg = '#6FA8DD')
+
+        def submit():
+            pass
+
+        # lables for this screen
+        title = tk.Label(self, text = 'Create User Account', bg = '#6FA8DD', font = ('helvetica', 14, 'bold'))
+        username_label = tk.Label(self, text = 'Enter username:', bg = '#6FA8DD')
+        user_info = tk.Label(self, text = '(Username must be at least 6 characters)', bg = '#6FA8DD')
+        pass_label = tk.Label(self, text = 'Enter password:', bg = '#6FA8DD')
+        pass_info = tk.Label(self, text = '(Password must be at least 8 characters)', bg = '#6FA8DD')
+        name_label = tk.Label(self, text = 'Enter name:', bg = '#6FA8DD')
+        birthday_label = tk.Label(self, text = 'Enter Birthday:', bg = '#6FA8DD')
+        birthday_info = tk.Label(self, text = '(MM/DD/YYYY)', bg = '#6FA8DD')
+        slash1 = tk.Label(self, text = '/', bg = '#6FA8DD')
+        slash2 = tk.Label(self, text = '/', bg = '#6FA8DD')
         
-        tk.Label(self, text = "This is the customer create account page.").place(relx = .3, rely = .3, anchor = tk.CENTER)
+
+        # text boxes
+        user_entry = tk.Entry(self, relief = tk.GROOVE, width = 35)
+        pass_entry = tk.Entry(self, relief = tk.GROOVE, width = 35, show = '•')
+        name_entry = tk.Entry(self, relief = tk.GROOVE, width = 35)
+        birthday_entry1 = tk.Entry(self, relief = tk.GROOVE, width = 4)
+        birthday_entry2 = tk.Entry(self, relief = tk.GROOVE, width = 4)
+        birthday_entry3 = tk.Entry(self, relief = tk.GROOVE, width = 4)
+
+
+        # buttons
+        create = tk.Button(self, text = 'Finish Creating Account', height = 3, command = submit)
+        back = tk.Button(self, text = 'Back to login page', command = lambda: master.switch_frame(Login))
+
+
+        # Many Menus Logo
+        load = Image.open('many_menus.png').resize((326, 212), Image.ANTIALIAS)
+        self.render = ImageTk.PhotoImage(load)
+        img = tk.Label(image = self.render, borderwidth = 3, bg = 'black')
+
+
+        # placing logo and title
+        img.place(relx = .5, rely = .02, anchor = tk.N)
+        title.place(relx = .5, rely = .34, anchor = tk.N)
+
+
+        # all items that have to do with username
+        username_label.place(relx = .31, rely = .4, anchor = tk.N)
+        user_entry.place(relx = .58, rely = .403, anchor = tk.N)
+        user_info.place(relx = .52, rely = .435, anchor = tk.N)
+
+
+        # all items for the password
+        pass_label.place(relx = .308, rely = .47, anchor = tk.N)
+        pass_entry.place(relx = .58, rely = .473, anchor = tk.N)
+        pass_info.place(relx = .52, rely = .505, anchor = tk.N)
+
+
+        # all items for name
+        name_label.place(relx = .29, rely = .54, anchor = tk.N)
+        name_entry.place(relx = .58, rely = .543, anchor = tk.N)
+
+
+        # all itms for birthday
+        birthday_label.place(relx = .3, rely = .584, anchor = tk.N)
+        birthday_entry1.place(relx = .424, rely = .587, anchor = tk.N)
+        slash1.place(relx = .464, rely = .587, anchor = tk.N)
+        birthday_entry2.place(relx = .504, rely = .587, anchor = tk.N)
+        slash2.place(relx = .544, rely = .587, anchor = tk.N)
+        birthday_entry3.place(relx = .584, rely = .587, anchor = tk.N)
+        birthday_info.place(relx = .69, rely = .587, anchor = tk.N)
+
+
+        # buttons
+        create.place(relx = .5, rely = .65, anchor = tk.N)
+        back.place(relx = .5, rely = .74, anchor = tk.N)
+
 
 class RestaurantUpdateInfo(tk.Frame):
     def __init__(self, master):

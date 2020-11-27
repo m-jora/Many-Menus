@@ -1,6 +1,7 @@
 import SQLWrapper as SQLWrapper
 import tkinter as tk
 from PIL import ImageTk, Image
+import datetime
 
 
 class Application(tk.Tk):
@@ -36,7 +37,7 @@ class Login(tk.Frame):
                 invalid.after(3000, invalid.destroy)
 
             elif res_account.get() and not user_account.get():
-                valid = validate_res_password('TestDatabase.db', user_entry.get(), pass_entry.get())
+                valid = validate_res_password('TestDatabase2.db', user_entry.get(), pass_entry.get())
 
                 if not valid:
                     invalid = tk.Label(self, text = 'Invalid username / Password')
@@ -47,7 +48,7 @@ class Login(tk.Frame):
                     master.switch_frame(RestaurantUpdateMenu)
         
             elif not res_account.get() and user_account.get():
-                valid = validate_password('TestDatabase.db', user_entry.get(), pass_entry.get())
+                valid = validate_password('TestDatabase2.db', user_entry.get(), pass_entry.get())
 
                 if not valid:
                     invalid = tk.Label(self, text = 'Invalid username / password')
@@ -115,7 +116,7 @@ class RestaurantCreateAccount(tk.Frame):
 
         # submit user account
         def submit():
-            SQLWrapper.create_restaurant('TestDatabase.db', (state_entry.get(), city_entry.get(), street_entry.get(), pass_entry.get(), user_entry.get(), store_entry.get(), phone_entry.get()))
+            SQLWrapper.create_restaurant('TestDatabase2.db', (state_entry.get(), city_entry.get(), street_entry.get(), pass_entry.get(), user_entry.get(), store_entry.get(), phone_entry.get()))
             master.switch_frame(RestaurantUpdateMenu)
 
         # wayyyyy too many labels for this screen
@@ -201,7 +202,11 @@ class CustomerCreateAccount(tk.Frame):
         self.configure(bg = '#6FA8DD')
 
         def submit():
-            pass
+            birthday = birthday_entry1.get() + '/' + birthday_entry2.get() + '/' + birthday_entry3.get()
+            age = datetime.datetime.now().year - int(birthday_entry3.get())
+
+            SQLWrapper.create_customer('TestDatabase2.db', (user_entry.get(), name_entry.get(), pass_entry.get(), birthday, age))
+            master.switch_frame(Browse)
 
         # lables for this screen
         title = tk.Label(self, text = 'Create User Account', bg = '#6FA8DD', font = ('helvetica', 14, 'bold'))

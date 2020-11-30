@@ -1,8 +1,18 @@
 import SQLWrapper as SQLWrapper
 import tkinter as tk
 from PIL import ImageTk, Image
+import sys
 import datetime
+ 
+import os
 
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 class Application(tk.Tk):
     def __init__(self):
@@ -10,7 +20,7 @@ class Application(tk.Tk):
         self._frame = None
         self.switch_frame(Login)
         self.title("Many Menus")
-        self.iconbitmap('pepper.ico')
+        self.iconbitmap(resource_path('pepper.ico'))
         self.minsize(600,700)
         self.maxsize(600,700)
 
@@ -84,7 +94,7 @@ class Login(tk.Frame):
         user_check = tk.Checkbutton(self, text = 'User', variable = user_account, bg = '#6FA8DD', activebackground = '#6FA8DD')
 
         # Many Menus logo
-        load = Image.open('many_menus.png').resize((326, 212), Image.ANTIALIAS)
+        load = Image.open(resource_path("many_menus.png")).resize((326, 212), Image.ANTIALIAS)
         self.render = ImageTk.PhotoImage(load)
         img = tk.Label(image = self.render, borderwidth = 3, bg = 'black')
 
@@ -150,7 +160,7 @@ class RestaurantCreateAccount(tk.Frame):
 
 
         # Many Menus Logo
-        load = Image.open('many_menus.png').resize((326, 212), Image.ANTIALIAS)
+        load = Image.open(resource_path('many_menus.png')).resize((326, 212), Image.ANTIALIAS)
         self.render = ImageTk.PhotoImage(load)
         img = tk.Label(image = self.render, borderwidth = 3, bg = 'black')
 
@@ -244,7 +254,7 @@ class CustomerCreateAccount(tk.Frame):
 
 
         # Many Menus Logo
-        load = Image.open('many_menus.png').resize((326, 212), Image.ANTIALIAS)
+        load = Image.open(resource_path('many_menus.png')).resize((326, 212), Image.ANTIALIAS)
         self.render = ImageTk.PhotoImage(load)
         img = tk.Label(image = self.render, borderwidth = 3, bg = 'black')
 
@@ -340,7 +350,6 @@ class Browse(tk.Frame):
     def __init__(self, master):
         return
 
-
 # Purpose: Validates a password for a given user
 def validate_password(database_file, username, entered_password):
     actualPassword = SQLWrapper.get_password_for_user(database_file, username)
@@ -359,5 +368,7 @@ def validate_res_password(database_file, username, entered_password):
     else:
         return True
 
+SQLWrapper.initialize_database("testDatabase2.db")
 app = Application()
 app.mainloop()
+

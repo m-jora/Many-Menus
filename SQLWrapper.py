@@ -27,16 +27,26 @@ def initialize_database(database_file):
     
     database = create_connection(database_file)
 
+   
+# Purpose: Creates the database for the Many Menus GUI
+def initialize_database(database_file):
+    
+    database = create_connection(database_file)
+
     with database:
         create_table(database, """
             CREATE TABLE IF NOT EXISTS Restaurant(
                 State TEXT NOT NULL,
                 City TEXT NOT NULL,
                 StreetAddress TEXT NOT NULL,
-                Password TEXT NOT NULL,
+                Password TEXT NOT NULL ,
                 Username TEXT PRIMARY KEY,
                 StoreName TEXT NOT NULL,
-                PhoneNumber TEXT NOT NULL
+                PhoneNumber TEXT NOT NULL,
+                CHECK(length(Username) >= 6),
+                CHECK(length(Password) >= 8),
+                CHECK(length(StoreName) >= 4),
+                CHECK(length(State) == 2)
             )""")
 
         create_table(database, """
@@ -69,7 +79,9 @@ def initialize_database(database_file):
                 Name TEXT NOT NULL,
                 Password TEXT NOT NULL,
                 Birthday TEXT NOT NULL,
-                Age TEXT NOT NULL
+                Age TEXT NOT NULL,
+                CHECK(length(Username) >= 6),
+                CHECK(length(Password) >= 8)
             )""")
 
         create_table(database, """

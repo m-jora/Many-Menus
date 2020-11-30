@@ -205,7 +205,15 @@ class CustomerCreateAccount(tk.Frame):
             birthday = birthday_entry1.get() + '/' + birthday_entry2.get() + '/' + birthday_entry3.get()
             age = datetime.datetime.now().year - int(birthday_entry3.get())
 
-            SQLWrapper.create_customer('TestDatabase2.db', (user_entry.get(), name_entry.get(), pass_entry.get(), birthday, age))
+            try:
+                SQLWrapper.create_customer('TestDatabase2.db', (user_entry.get(), name_entry.get(), pass_entry.get(), birthday, age))
+            
+            except:
+               invalid = tk.Label(self, text = 'Invalid Field')
+               invalid.place(relx = .5, rely = .79, anchor = tk.N) 
+               invalid.after(3000, invalid.destroy)
+               return
+
             master.switch_frame(Browse)
 
         # lables for this screen
@@ -280,6 +288,39 @@ class CustomerCreateAccount(tk.Frame):
 
 class RestaurantUpdateInfo(tk.Frame):
     def __init__(self, master):
+        tk.Frame.__init__(self, master)
+        self.configure(bg = '#6FA8DD')
+        # harrison
+
+        # text labels
+        res_name = tk.Label(self, text = 'Insert Restauraunt name', bg = '#6FA8DD')
+        title = tk.Label(self, text = 'Restaurant Info', bg = '#6FA8DD', font = ('helvetica', 14, 'bold'))
+        name_label = tk.Label(self, text = 'Restaurant Name:', bg = '#6FA8DD')
+        address_label = tk.Label(self, text = 'Restaurant Address:', bg = '#6FA8DD')
+        city_label = tk.Label(self, text = 'City:', bg = '#6FA8DD')
+        state_label = tk.Label(self, text = 'State:', bg = '#6FA8DD')
+        phone_label = tk.Label(self, text = 'Phone number:', bg = '#6FA8DD')
+        pass_label = tk.Label(self, text = 'New Password:', bg = '#6FA8DD')
+
+
+        # buttons
+        update_menu = tk.Button(self, text = 'Update Menu', command = lambda: master.switch_frame(RestaurantUpdateMenu))
+        update_inven = tk.Button(self, text = 'Update Inventory', command = lambda: master.switch_frame(RestaurantUpdateInventory))
+        save = tk.Button(self, text = 'Save changes')
+
+
+        # text boxes
+        name_entry = tk.Entry(self, relief = tk.GROOVE, width = 35)
+        address_entry = tk.Entry(self, relief = tk.GROOVE, width = 35)
+        city_entry = tk.Entry(self, relief = tk.GROOVE, width = 35)
+        state_entry = tk.Entry(self, relief = tk.GROOVE, width = 4)
+        phone_entry = tk.Entry(self, relief = tk.GROOVE, width = 35)
+        pass_entry = tk.Entry(self, relief = tk.GROOVE, width = 35, show = '•')
+
+
+        #
+
+
         return
 
 class RestaurantUpdateInventory(tk.Frame):
@@ -292,6 +333,7 @@ class RestaurantUpdateMenu(tk.Frame):
 
 class UpdateUserInfo(tk.Frame):
     def __init__(self, master):
+        # harrison
         return
 
 class Browse(tk.Frame):

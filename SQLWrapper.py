@@ -22,12 +22,7 @@ def create_table(conn, create_table_sql):
     except Error as e:
         print(e)
 
-# Purpose: Creates the database for the Many Menus GUI
-def initialize_database(database_file):
-    
-    database = create_connection(database_file)
 
-   
 # Purpose: Creates the database for the Many Menus GUI
 def initialize_database(database_file):
     
@@ -354,7 +349,7 @@ def update_restaurant_info(database_file, Username, updated_restaurant_tuple):
                 Username = ?,
                 StoreName = ?,
                 PhoneNumber =?
-            WHERE Username = ''' + Username 
+            WHERE Username = ''' + str(Username)
 
     curr = conn.cursor()
     curr.execute(sql, updated_restaurant_tuple)

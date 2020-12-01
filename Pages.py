@@ -320,6 +320,17 @@ class RestaurantUpdateInfo(tk.Frame):
         self.configure(bg = '#6FA8DD')
 
         global res_name
+        user = res_name
+
+        def submit(password, state, city, street, user, store, phone):
+            #try:
+            SQLWrapper.update_restaurant_info('TestDatabase2.db', user, (state, city, street, password, user, store, phone))
+
+            #except:
+            #    invalid = tk.Label(self, text = 'Invalid Field')
+            #    invalid.place(relx = .5, rely = .6, anchor = tk.N)
+            #    invalid.after(3000, invalid.destroy)
+            #    return
 
         # text labels
         res_name = tk.Label(self, text = res_name, bg = '#6FA8DD', font = ('helvetica', 11))
@@ -335,7 +346,7 @@ class RestaurantUpdateInfo(tk.Frame):
         # buttons
         update_menu = tk.Button(self, text = 'Update Menu', height = 2, width = 13, command = lambda: master.switch_frame(RestaurantUpdateMenu))
         update_inven = tk.Button(self, text = 'Update Inventory', height = 2, command = lambda: master.switch_frame(RestaurantUpdateInventory))
-        save = tk.Button(self, text = 'Save changes', height = 2)
+        save = tk.Button(self, text = 'Save changes', height = 2, command = lambda: submit(pass_entry.get(), state_entry.get(), city_entry.get(), address_entry.get(), user, name_entry.get(), phone_entry.get()))
 
 
         # text boxes

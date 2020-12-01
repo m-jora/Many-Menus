@@ -22,7 +22,6 @@ def create_table(conn, create_table_sql):
     except Error as e:
         print(e)
 
-
 # Purpose: Creates the database for the Many Menus GUI
 def initialize_database(database_file):
     
@@ -336,9 +335,9 @@ def delete_menu(database_file, MenuID):
 # Start of update functions                                       #
 ###################################################################
 
-# @param Username: the primary key for the restaurant table
-# @param updatedRestaurantTuple: the new tuple to insert into the table
-def update_restaurant_info(database_file, Username, updated_restaurant_tuple):
+# @param updatedRestaurantTuple: the new tuple to insert into the table where we are 
+# given the values in this order: State, City, StreetAddress, Password, StoreName, PhoneNumber, and the Username last
+def update_restaurant_info(database_file, updated_restaurant_tuple):
     conn = sqlite3.connect(database_file)
 
     sql = '''UPDATE Restaurant 
@@ -346,29 +345,45 @@ def update_restaurant_info(database_file, Username, updated_restaurant_tuple):
                 City = ?,
                 StreetAddress = ?,
                 Password = ?,
-                Username = ?,
                 StoreName = ?,
                 PhoneNumber =?
-            WHERE Username = ''' + str(Username)
+            WHERE Username = ?'''
 
     curr = conn.cursor()
     curr.execute(sql, updated_restaurant_tuple)
 
     conn.commit()
 
-# @param FoodID: the primary key for the food table
+# @param updated_customer_tuple: the new tuple to insert into the table where we are
+# given the values in this order: Name, Password, Birthday, Age, Username
+def update_customer_info(database_file, updated_customer_tuple):
+    conn = sqlite3.connect(database_file)
+
+    sql = '''UPDATE Customer
+                SET Name=?,
+                Password=?,
+                Birthday=?,
+                Age=?
+                WHERE Username=?'''
+
+    curr = conn.cursor()
+    curr.execute(sql, updated_customer_tuple)
+
+    conn.commit()
+
 # @param updated_food_tuple: the datavalue to replace the previous element
-def update_food(database_file, FoodID, updated_food_tuple):
+# The format of the updated_food_tuple needs to have this order:
+# CaloriesPerServing, Name, Price, QuantityInStock, InStock, FoodID
+def update_food(database_file, updated_food_tuple):
     conn = sqlite3.connect(database_file)
 
     sql = '''UPDATE Food
-                SET FoodID=?,
-                CaloriesPerServing=?,
+                SET CaloriesPerServing=?,
                 Name=?,
                 Price=?,
                 QuantityInStock=?,
                 InStock=?
-            WHERE FoodID = ''' + FoodID
+            WHERE FoodID = ?'''
 
     curr = conn.cursor()
     curr.execute(sql, updated_food_tuple)
@@ -398,6 +413,18 @@ def get_password_for_user(database_file, customer_username):
         return("USER DOES NOT EXIST")
     else:
         return(password[0])
+
+
+# Purpose: Gets the basic info about a user
+def get_customer_info(database_file, customer_username):
+    conn = sqlite3.connect(database_file)
+
+    curr = conn.cursor()
+    curr.execute("SELECT Name,Birthday,Age FROM Customer")
+
+    customer_data = curr.fetchone()
+
+    return customer_data
 
 # Purpose: Gets the password for an associated restaurant
 def get_password_for_restaurant_username(database_file, restaurant_username):
@@ -462,7 +489,7 @@ def get_restaurant_info(database_file, restaurant_username):
     conn = sqlite3.connect(database_file)
 
     curr = conn.cursor()
-    curr.execute("SELECT State, City, StreetAddress, StoreName FROM Restaurant WHERE Username=?", (restaurant_username,))
+    curr.execute("SELECT State, City, StreetAddress, StoreName, PhoneNumber FROM Restaurant WHERE Username=?", (restaurant_username,))
 
     store_info = curr.fetchall()
 

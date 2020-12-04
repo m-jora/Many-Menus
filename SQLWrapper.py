@@ -55,7 +55,7 @@ def initialize_database(database_file):
             CREATE TABLE IF NOT EXISTS Menu(
                 MenuID TEXT PRIMARY KEY,
                 RestaurantUsername TEXT,
-                FOREIGN KEY(RestaurantUsername) REFERENCES RestaurantUsername(Restaurant)
+                FOREIGN KEY(RestaurantUsername) REFERENCES Username(Restaurant)
             )""")
 
         create_table(database, """
@@ -115,10 +115,14 @@ def initialize_database(database_file):
             CREATE TABLE IF NOT EXISTS Food(
                 FoodID TEXT PRIMARY KEY,
                 CaloriesPerServing INTEGER,
+                MenuID TEXT,
+                InventoryID TEXT,
                 Name TEXT,
                 Price TEXT,
                 QuantityInStock INTEGER,
-                InStock INTEGER
+                InStock INTEGER,
+                FOREIGN KEY(MenuID) REFERENCES MenuID(Menu),
+                FOREIGN KEY(InventoryID) REFERENCES InventoryID(Inventory)
         )""") 
 
         create_table(database, """
@@ -151,8 +155,7 @@ def initialize_database(database_file):
                 FOREIGN KEY(RestaurantUsername) REFERENCES RestaurantUsername(Restaurant),
                 FOREIGN KEY(InventoryID) REFERENCES InventoryID(Inventory)  
         )""")
-
-      
+   
 ###################################################################
 # The following functions are SQL commands for inserting data     #
 # into the various tables of our database                         #
@@ -242,7 +245,7 @@ def create_diet_restricted_type(database_file, restricted_type_data):
 def create_food(database_file, food_data):
     conn = sqlite3.connect(database_file)
 
-    sqlCommand = '''INSERT INTO Food(FoodID, CaloriesPerServing,Name,Price,QuantityInStock,InStock) VALUES (?,?,?,?,?,?)'''
+    sqlCommand = '''INSERT INTO Food(FoodID,CaloriesPerServing,MenuID,InventoryID,Name,Price,QuantityInStock,InStock) VALUES (?,?,?,?,?,?,?,?)'''
 
     cur = conn.cursor()
     cur.execute(sqlCommand, food_data)
@@ -273,6 +276,15 @@ def create_restaurant_update(database_file, restaurant_update_data):
 
     cur = conn.cursor()
     cur.execute(sqlCommand, restaurant_update_data)
+    conn.commit()
+
+def create_inventory(database_file, inventory_data):
+    conn = sqlite3.connect(database_file)
+
+    sqlCommand = '''INSERT INTO Inventory(InventoryID, RestaurantUsername) VALUES (?,?)'''
+
+    cur = conn.cursor()
+    cur.execute(sqlCommand, inventory_data)
     conn.commit()
 
 ###################################################################
@@ -467,7 +479,7 @@ def get_menu(database_file, restaurant_username):
     conn = sqlite3.connect(database_file)
 
     curr = conn.cursor()
-    curr.execute("SELECT * FROM Menu WHERE RestaurantUsername=", (restaurant_username,))
+    curr.execute("SELECT * FROM Menu WHERE RestaurantUsername=?", (restaurant_username,))
 
     menu_info = curr.fetchall()
 
@@ -505,6 +517,39 @@ def get_adhere_to(database_file, diet_name):
     food_for_diet = curr.fetchall()
 
     return(food_for_diet)
+
+# Purpoes: Gets all the food listed on a menu with the given ID
+def get_food_on_menu(database_file, menuID):
+    conn = sqlite3.connect(database_file)
+
+    curr = conn.cursor()
+    curr.execute("SELECT Name,CaloriesPerServing,Price FROM Food WHERE MenuID=?", (menuID,))
+
+    food_on_menu = curr.fetchall()
+
+    return(food_on_menu)
+
+# Purpose: Gets all the food listed in an inventory with the given ID
+def get_food_in_inventory(database_file, inventoryID):
+    conn = sqlite3.connect(database_file)
+
+    curr = conn.cursor()
+    curr.execute("SELECT Name,QuantityInStock FROM Food WHERE inventoryID=?", (inventoryID,))
+
+    food_in_inventory = curr.fetchall()
+
+    return(food_in_inventory) 
+
+# Purpose: Gets all food in the inventory that have more than zero items
+def get_nonempty_food_from_inventory(database_file, inventoryID):
+    conn = sqlite3.connect(database_file)
+
+    curr = conn.cursor()
+    curr.execute("SELECT Name,QuantityInStock FROM Food WHERE inventoryID=? AND QuantityInStock > 0", (inventoryID,) )
+
+    nonempty_food_in_inventory = curr.fetchall()
+
+    return(nonempty_food_in_inventory)
 
 
 initialize_database("testDatabase.db")

@@ -411,8 +411,8 @@ class RestaurantUpdateInventory(tk.Frame):
         img = tk.Label(image = self.render, borderwidth = 3, bg = 'black')
 
         # buttons
-        update_info = tk.button(self, text = 'Update Info', height = 2, width = 13)
-        update_menu = tk.button(self, text = 'Update Menu', height = 2, width = 13)
+        update_info = tk.Button(self, text = 'Update Info', height = 2, width = 13)
+        update_menu = tk.Button(self, text = 'Update Menu', height = 2, width = 13)
         remove_ingredient = tk.Button(self, text = 'remove', height = 1, width = 12)
         # command is save amount
         save_amount = tk.Button(self, text = 'save amount', height = 1, width = 12) 
@@ -465,7 +465,7 @@ class UpdateUserInfo(tk.Frame):
             pass
 
         def get_location():
-            pass
+            new_location.after(0, new_location.destroy)
 
         def add_location():
             pass

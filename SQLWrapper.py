@@ -562,3 +562,5 @@ def get_number_of_food_items(database_file, menuID):
     numOfFoods = curr.fetchone()
 
     return(numOfFoods[0]) # Get the first argument of the tuple
+
+initialize_database("ManyMenus.db")

@@ -72,7 +72,7 @@ class Login(tk.Frame):
                 else:
                     global user_name
                     user_name = user_entry.get()
-                    master.switch_frame(Browse)
+                    master.switch_frame(UpdateUserInfo) # Browse
             
             elif not res_account.get() and not user_account.get():
                 invalid = tk.Label(self, text = 'Please select account type')
@@ -86,8 +86,8 @@ class Login(tk.Frame):
 
         # buttons
         login = tk.Button(self, text = 'Login', width = 8, height = 2, command = lambda: submit(res_account, user_account))
-        create_user = tk.Button(self, text = 'Create new user account', wraplength = 100, justify = tk.CENTER, width = 14, height = 3, command = lambda: master.switch_frame(UpdateUserInfo)) #CustomerCreateAccount
-        create_res = tk.Button(self, text = 'Create new restaurant account', wraplength = 100, justify = tk.CENTER, width = 14, height = 3, command = lambda: master.switch_frame(RestaurantCreateAccount)) # RestaurantCreateAccount
+        create_user = tk.Button(self, text = 'Create new user account', wraplength = 100, justify = tk.CENTER, width = 14, height = 3, command = lambda: master.switch_frame(CustomerCreateAccount)) #UpdateUserInfo
+        create_res = tk.Button(self, text = 'Create new restaurant account', wraplength = 100, justify = tk.CENTER, width = 14, height = 3, command = lambda: master.switch_frame(RestaurantCreateAccount)) # RestaurantUpdateInfo
 
         # text boxes
         user_entry = tk.Entry(self, width = 35, relief = tk.GROOVE)
@@ -413,7 +413,26 @@ class RestaurantUpdateMenu(tk.Frame):
 
 class UpdateUserInfo(tk.Frame):
     def __init__(self, master):
-        # harrison
+        tk.Frame.__init__(self, master)
+        self.configure(bg = '#6FA8DD')
+
+        global user_name
+        user = user_name
+
+        # text labels
+        user_label = tk.Label(self, text = user, bg = '#6FA8DD', font = ('helvetica', 11))
+        title = tk.Label(self, text = 'Update Info', bg = '#6FA8DD', font = ('helvetica', 14, 'bold'))
+        fav_locations = tk.Label(self, text = 'Favorite Locations', bg = '#6FA8DD', font = ('helvetica', 11, 'bold'))
+        
+
+
+
+
+
+
+
+
+
         return
 
 class Browse(tk.Frame):

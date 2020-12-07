@@ -444,13 +444,22 @@ class UpdateUserInfo(tk.Frame):
         tk.Frame.__init__(self, master)
         self.configure(bg = '#6FA8DD')
 
+        loca_default = .34
+        diet_default = .64
+
         global user_name
         user = user_name
 
-        def entry():
+        def get_diet():
             pass
 
-        def submit():
+        def add_diet():
+            pass
+
+        def get_location():
+            pass
+
+        def add_location():
             pass
 
         # text labels
@@ -460,13 +469,17 @@ class UpdateUserInfo(tk.Frame):
         diets_label = tk.Label(self, text = 'Diet', bg = '#6FA8DD', font = ('helvetica', 11, 'bold'))
 
 
-
         # add loop for adding in labels for diet and locations?
+        locations = SQLWrapper.get_customer_locations('TestDatabase2.db', user)
+        diet = SQLWrapper.get_diet_for_user('TestDatabase2.db', user)
+        print(locations)
+        print(diet)
 
 
         # button
         back = tk.Button(self, text = 'Back to Browse', height = 2, command = lambda: master.switch_frame(Browse))
-        
+        new_location = tk.Button(self, text = 'Add New location', command = get_location)
+        new_diet = tk.Button(self, text = 'Add new Diet', command = get_diet)
 
 
         # Many Menus Logo
@@ -481,10 +494,16 @@ class UpdateUserInfo(tk.Frame):
         title.place(relx = .5, rely = .2, anchor = tk.N)
         back.place(relx = .8, rely = .05, anchor = tk.N)
 
+
         # sub titles sections
         fav_locations.place(relx = .5, rely = .3, anchor = tk.N)
         diets_label.place(relx = .5, rely = .6, anchor = tk.N)
 
+
+        # add button place
+        # shift these based on locaitons and diets
+        new_location.place(relx = .5, rely = loca_default, anchor = tk.N)
+        new_diet.place(relx = .5, rely = diet_default, anchor = tk.N)
         return
 
 class Browse(tk.Frame):

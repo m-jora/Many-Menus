@@ -405,10 +405,61 @@ class RestaurantUpdateInfo(tk.Frame):
 
 class RestaurantUpdateInventory(tk.Frame):
     def __init__(self, master):
+        # main frame
+        tk.Frame.__init__(self, master)
+        self.configure(bg = '#6FA8DD')
+
+        global res_name
+        user = res_name
+
+        #def save_amount():
+        
+        #def remove():
+        
+        #def add_new_ingredient():
+        
+        # text labels
+        res_name = tk.Label(self, text = res_name, bg = '#6FA8DD', font = ('helvetica', 11))
+        title = tk.Label(self, text = 'Update Inventory', bg = '#6FA8DD', font = ('helvetica', 14, 'bold'))
+        amount = tk.Label(self, text = 'Amount: ', bg = '#6FA8DD', font = ('helvetica', 11))
+
+        # text box
+        enter_amount = tk.Entry(self, relief = tk.GROOVE, width = 35)
+
+        # Many Menus Logo
+        load = Image.open(resource_path('many_menus.png')).resize((163, 106), Image.ANTIALIAS)
+        self.render = ImageTk.PhotoImage(load)
+        img = tk.Label(image = self.render, borderwidth = 3, bg = 'black')
+
+        # buttons
+        update_info = tk.button(self, text = 'Update Info', height = 2, width = 13)
+        update_menu = tk.button(self, text = 'Update Menu', height = 2, width = 13)
+        # command is save amount
+        save_amount = tk.button(self, text = 'save amount', height = 1, width = 12) 
+        # opens text box to type in new amount
+        update_amount = tk.button(self, text = 'update amount', height = 1, width = 12) 
+        add_new_ingredient = tk.button(self, text = 'Add new ingredient', height = 1, width = 13)
+
+        # display image, restaurant name, title, change page buttons
+        img.place(relx = .05, rely = .02)
+        res_name.place(relx = .5, rely = .08, anchor = tk.N)
+        title.place(relx = .5, rely = .2, anchor = tk.N)
+        update_info.place(relx = .8, rely = .03, anchor = tk.N)
+        update_menu.place(relx = .8, rely = .1, anchor = tk.N)
+
+        # display table
+
+
         return
 
 class RestaurantUpdateMenu(tk.Frame):
     def __init__(self, master):
+
+        # Many Menus Logo
+        load = Image.open(resource_path('many_menus.png')).resize((163, 106), Image.ANTIALIAS)
+        self.render = ImageTk.PhotoImage(load)
+        img = tk.Label(image = self.render, borderwidth = 3, bg = 'black')
+
         return
 
 class UpdateUserInfo(tk.Frame):
@@ -437,6 +488,12 @@ class UpdateUserInfo(tk.Frame):
 
 class Browse(tk.Frame):
     def __init__(self, master):
+
+        # Many Menus Logo
+        load = Image.open(resource_path('many_menus.png')).resize((163, 106), Image.ANTIALIAS)
+        self.render = ImageTk.PhotoImage(load)
+        img = tk.Label(image = self.render, borderwidth = 3, bg = 'black')
+
         return
 
 # Purpose: Validates a password for a given user

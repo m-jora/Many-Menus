@@ -324,7 +324,7 @@ class RestaurantUpdateInfo(tk.Frame):
 
         def submit(password, state, city, street, user, store, phone):
             #try:
-            SQLWrapper.update_restaurant_info('TestDatabase2.db', user, (state, city, street, password, user, store, phone))
+            SQLWrapper.update_restaurant_info('TestDatabase2.db', (state, city, street, password, store, phone))
 
             #except:
             #    invalid = tk.Label(self, text = 'Invalid Field')
@@ -419,19 +419,42 @@ class UpdateUserInfo(tk.Frame):
         global user_name
         user = user_name
 
+        def entry():
+            pass
+
+        def submit():
+            pass
+
         # text labels
         user_label = tk.Label(self, text = user, bg = '#6FA8DD', font = ('helvetica', 11))
         title = tk.Label(self, text = 'Update Info', bg = '#6FA8DD', font = ('helvetica', 14, 'bold'))
         fav_locations = tk.Label(self, text = 'Favorite Locations', bg = '#6FA8DD', font = ('helvetica', 11, 'bold'))
-        
+        diets_label = tk.Label(self, text = 'Diet', bg = '#6FA8DD', font = ('helvetica', 11, 'bold'))
 
 
 
+        # add loop for adding in labels for diet and locations?
 
 
+        # button
+        back = tk.Button(self, text = 'Back to Browse', height = 2, command = lambda: master.switch_frame(Browse))
 
 
+        # Many Menus Logo
+        load = Image.open(resource_path('many_menus.png')).resize((163, 106), Image.ANTIALIAS)
+        self.render = ImageTk.PhotoImage(load)
+        img = tk.Label(image = self.render, borderwidth = 3, bg = 'black')
 
+
+        # placing logo, title, back button
+        img.place(relx = .05, rely = .02)
+        user_label.place(relx = .5, rely = .08, anchor = tk.N)
+        title.place(relx = .5, rely = .2, anchor = tk.N)
+        back.place(relx = .8, rely = .05, anchor = tk.N)
+
+        # sub titles sections
+        fav_locations.place(relx = .5, rely = .3, anchor = tk.N)
+        diets_label.place(relx = .5, rely = .6, anchor = tk.N)
 
         return
 

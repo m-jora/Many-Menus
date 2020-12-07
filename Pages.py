@@ -415,6 +415,7 @@ class UpdateUserInfo(tk.Frame):
 
         # button
         back = tk.Button(self, text = 'Back to Browse', height = 2, command = lambda: master.switch_frame(Browse))
+        
 
 
         # Many Menus Logo

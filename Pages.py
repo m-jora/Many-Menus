@@ -314,7 +314,7 @@ class RestaurantUpdateInfo(tk.Frame):
             #    return
 
         # Text labels
-        res_name = tk.Label(self, text = res_name, bg = '#6FA8DD', font = ('helvetica', 11))
+        rest_name = tk.Label(self, text = res_name, bg = '#6FA8DD', font = ('helvetica', 11))
         title = tk.Label(self, text = 'Restaurant Info', bg = '#6FA8DD', font = ('helvetica', 14, 'bold'))
         name_label = tk.Label(self, text = 'Restaurant Name:', bg = '#6FA8DD')
         address_label = tk.Label(self, text = 'Restaurant Address:', bg = '#6FA8DD')
@@ -344,7 +344,7 @@ class RestaurantUpdateInfo(tk.Frame):
 
         # Placing logo, title, update buttons
         img.place(relx = .05, rely = .02)
-        res_name.place(relx = .5, rely = .08, anchor = tk.N)
+        rest_name.place(relx = .5, rely = .08, anchor = tk.N)
         title.place(relx = .5, rely = .2, anchor = tk.N)
         update_menu.place(relx = .8, rely = .03, anchor = tk.N)
         update_inven.place(relx = .8, rely = .1, anchor = tk.N)
@@ -409,13 +409,13 @@ class RestaurantUpdateInventory(tk.Frame):
         img = tk.Label(image = self.render, borderwidth = 3, bg = 'black')
 
         # buttons
-        update_info = tk.button(self, text = 'Update Info', height = 2, width = 13)
-        update_menu = tk.button(self, text = 'Update Menu', height = 2, width = 13)
+        update_info = tk.Button(self, text = 'Update Info', height = 2, width = 13)
+        update_menu = tk.Button(self, text = 'Update Menu', height = 2, width = 13)
         # command is save amount
-        save_amount = tk.button(self, text = 'save amount', height = 1, width = 12) 
+        save_amount = tk.Button(self, text = 'save amount', height = 1, width = 12) 
         # opens text box to type in new amount
-        update_amount = tk.button(self, text = 'update amount', height = 1, width = 12) 
-        add_new_ingredient = tk.button(self, text = 'Add new ingredient', height = 1, width = 13)
+        update_amount = tk.Button(self, text = 'update amount', height = 1, width = 12) 
+        add_new_ingredient = tk.Button(self, text = 'Add new ingredient', height = 1, width = 13)
 
         # display image, restaurant name, title, change page buttons
         img.place(relx = .05, rely = .02)

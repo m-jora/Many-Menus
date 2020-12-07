@@ -396,9 +396,11 @@ class RestaurantUpdateInventory(tk.Frame):
         #def add_new_ingredient():
         
         # text labels
-        res_name = tk.Label(self, text = res_name, bg = '#6FA8DD', font = ('helvetica', 11))
-        title = tk.Label(self, text = 'Update Inventory', bg = '#6FA8DD', font = ('helvetica', 14, 'bold'))
-        amount = tk.Label(self, text = 'Amount: ', bg = '#6FA8DD', font = ('helvetica', 11))
+        res_name_label = tk.Label(self, text = res_name, bg = '#6FA8DD', font = ('helvetica', 11))
+        title_label = tk.Label(self, text = 'Update Inventory', bg = '#6FA8DD', font = ('helvetica', 14, 'bold'))
+        amount_label = tk.Label(self, text = 'Amount: ', bg = '#6FA8DD', font = ('helvetica', 11))
+        ingredient_name_label = tk.Label(self, text = 'ingre 1', bg = '#6FA8DD', font = ('helvetica', 11, 'bold'))
+        ingredient_amount_label = tk.Label(self, text = '1 oz', bg = '#6FA8DD', font = ('helvetica', 11))
 
         # text box
         enter_amount = tk.Entry(self, relief = tk.GROOVE, width = 35)
@@ -409,8 +411,9 @@ class RestaurantUpdateInventory(tk.Frame):
         img = tk.Label(image = self.render, borderwidth = 3, bg = 'black')
 
         # buttons
-        update_info = tk.Button(self, text = 'Update Info', height = 2, width = 13)
-        update_menu = tk.Button(self, text = 'Update Menu', height = 2, width = 13)
+        update_info = tk.button(self, text = 'Update Info', height = 2, width = 13)
+        update_menu = tk.button(self, text = 'Update Menu', height = 2, width = 13)
+        remove_ingredient = tk.Button(self, text = 'remove', height = 1, width = 12)
         # command is save amount
         save_amount = tk.Button(self, text = 'save amount', height = 1, width = 12) 
         # opens text box to type in new amount
@@ -419,13 +422,18 @@ class RestaurantUpdateInventory(tk.Frame):
 
         # display image, restaurant name, title, change page buttons
         img.place(relx = .05, rely = .02)
-        res_name.place(relx = .5, rely = .08, anchor = tk.N)
-        title.place(relx = .5, rely = .2, anchor = tk.N)
+        res_name_label.place(relx = .5, rely = .08, anchor = tk.N)
+        title_label.place(relx = .5, rely = .2, anchor = tk.N)
         update_info.place(relx = .8, rely = .03, anchor = tk.N)
         update_menu.place(relx = .8, rely = .1, anchor = tk.N)
 
-        # display table
-
+        # display table (ingredient name, remove, amount label, amount, update amount button)
+        ingredient_name_label.place(relx = .2, rely = .4, anchor = tk.N)
+        remove_ingredient.place(relx = .3, rely = .4, anchor = tk.N)
+        amount_label.place(relx = .2, rely = .45, anchor = tk.N)
+        ingredient_amount_label.place(relx = .25, rely = .45, anchor = tk.N)
+        save_amount.place(relx = .3, rely = .45, anchor = tk.N)
+        add_new_ingredient.place(relx = .2, rely = .5, anchor = tk.N)
 
         return
 

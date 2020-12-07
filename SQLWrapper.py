@@ -56,7 +56,7 @@ def initialize_database(database_file):
             CREATE TABLE IF NOT EXISTS Menu(
                 MenuID TEXT PRIMARY KEY,
                 RestaurantUsername TEXT,
-                FOREIGN KEY(RestaurantUsername) REFERENCES RestaurantUsername(Restaurant)
+                FOREIGN KEY(RestaurantUsername) REFERENCES Username(Restaurant)
             )""")
 
         create_table(database, """
@@ -116,10 +116,14 @@ def initialize_database(database_file):
             CREATE TABLE IF NOT EXISTS Food(
                 FoodID TEXT PRIMARY KEY,
                 CaloriesPerServing INTEGER,
+                MenuID TEXT,
+                InventoryID TEXT,
                 Name TEXT,
                 Price TEXT,
                 QuantityInStock INTEGER,
-                InStock INTEGER
+                InStock INTEGER,
+                FOREIGN KEY(MenuID) REFERENCES MenuID(Menu),
+                FOREIGN KEY(InventoryID) REFERENCES InventoryID(Inventory)
         )""") 
 
         create_table(database, """
@@ -152,8 +156,7 @@ def initialize_database(database_file):
                 FOREIGN KEY(RestaurantUsername) REFERENCES RestaurantUsername(Restaurant),
                 FOREIGN KEY(InventoryID) REFERENCES InventoryID(Inventory)  
         )""")
-
-      
+   
 ###################################################################
 # The following functions are SQL commands for inserting data     #
 # into the various tables of our database                         #
@@ -243,7 +246,7 @@ def create_diet_restricted_type(database_file, restricted_type_data):
 def create_food(database_file, food_data):
     conn = sqlite3.connect(database_file)
 
-    sqlCommand = '''INSERT INTO Food(FoodID, CaloriesPerServing,Name,Price,QuantityInStock,InStock) VALUES (?,?,?,?,?,?)'''
+    sqlCommand = '''INSERT INTO Food(FoodID,CaloriesPerServing,MenuID,InventoryID,Name,Price,QuantityInStock,InStock) VALUES (?,?,?,?,?,?,?,?)'''
 
     cur = conn.cursor()
     cur.execute(sqlCommand, food_data)
@@ -274,6 +277,15 @@ def create_restaurant_update(database_file, restaurant_update_data):
 
     cur = conn.cursor()
     cur.execute(sqlCommand, restaurant_update_data)
+    conn.commit()
+
+def create_inventory(database_file, inventory_data):
+    conn = sqlite3.connect(database_file)
+
+    sqlCommand = '''INSERT INTO Inventory(InventoryID, RestaurantUsername) VALUES (?,?)'''
+
+    cur = conn.cursor()
+    cur.execute(sqlCommand, inventory_data)
     conn.commit()
 
 ###################################################################
@@ -336,9 +348,9 @@ def delete_menu(database_file, MenuID):
 # Start of update functions                                       #
 ###################################################################
 
-# @param Username: the primary key for the restaurant table
-# @param updatedRestaurantTuple: the new tuple to insert into the table
-def update_restaurant_info(database_file, Username, updated_restaurant_tuple):
+# @param updatedRestaurantTuple: the new tuple to insert into the table where we are 
+# given the values in this order: State, City, StreetAddress, Password, StoreName, PhoneNumber, and the Username last
+def update_restaurant_info(database_file, updated_restaurant_tuple):
     conn = sqlite3.connect(database_file)
 
     sql = '''UPDATE Restaurant 
@@ -346,29 +358,45 @@ def update_restaurant_info(database_file, Username, updated_restaurant_tuple):
                 City = ?,
                 StreetAddress = ?,
                 Password = ?,
-                Username = ?,
                 StoreName = ?,
                 PhoneNumber =?
-            WHERE Username = ''' + Username 
+            WHERE Username = ?'''
 
     curr = conn.cursor()
     curr.execute(sql, updated_restaurant_tuple)
 
     conn.commit()
 
-# @param FoodID: the primary key for the food table
+# @param updated_customer_tuple: the new tuple to insert into the table where we are
+# given the values in this order: Name, Password, Birthday, Age, Username
+def update_customer_info(database_file, updated_customer_tuple):
+    conn = sqlite3.connect(database_file)
+
+    sql = '''UPDATE Customer
+                SET Name=?,
+                Password=?,
+                Birthday=?,
+                Age=?
+                WHERE Username=?'''
+
+    curr = conn.cursor()
+    curr.execute(sql, updated_customer_tuple)
+
+    conn.commit()
+
 # @param updated_food_tuple: the datavalue to replace the previous element
-def update_food(database_file, FoodID, updated_food_tuple):
+# The format of the updated_food_tuple needs to have this order:
+# CaloriesPerServing, Name, Price, QuantityInStock, InStock, FoodID
+def update_food(database_file, updated_food_tuple):
     conn = sqlite3.connect(database_file)
 
     sql = '''UPDATE Food
-                SET FoodID=?,
-                CaloriesPerServing=?,
+                SET CaloriesPerServing=?,
                 Name=?,
                 Price=?,
                 QuantityInStock=?,
                 InStock=?
-            WHERE FoodID = ''' + FoodID
+            WHERE FoodID = ?'''
 
     curr = conn.cursor()
     curr.execute(sql, updated_food_tuple)
@@ -398,6 +426,18 @@ def get_password_for_user(database_file, customer_username):
         return("USER DOES NOT EXIST")
     else:
         return(password[0])
+
+
+# Purpose: Gets the basic info about a user
+def get_customer_info(database_file, customer_username):
+    conn = sqlite3.connect(database_file)
+
+    curr = conn.cursor()
+    curr.execute("SELECT Name,Birthday,Age FROM Customer")
+
+    customer_data = curr.fetchone()
+
+    return customer_data
 
 # Purpose: Gets the password for an associated restaurant
 def get_password_for_restaurant_username(database_file, restaurant_username):
@@ -440,7 +480,7 @@ def get_menu(database_file, restaurant_username):
     conn = sqlite3.connect(database_file)
 
     curr = conn.cursor()
-    curr.execute("SELECT * FROM Menu WHERE RestaurantUsername=", (restaurant_username,))
+    curr.execute("SELECT * FROM Menu WHERE RestaurantUsername=?", (restaurant_username,))
 
     menu_info = curr.fetchall()
 
@@ -462,7 +502,7 @@ def get_restaurant_info(database_file, restaurant_username):
     conn = sqlite3.connect(database_file)
 
     curr = conn.cursor()
-    curr.execute("SELECT State, City, StreetAddress, StoreName FROM Restaurant WHERE Username=?", (restaurant_username,))
+    curr.execute("SELECT State, City, StreetAddress, StoreName, PhoneNumber FROM Restaurant WHERE Username=?", (restaurant_username,))
 
     store_info = curr.fetchall()
 
@@ -479,5 +519,49 @@ def get_adhere_to(database_file, diet_name):
 
     return(food_for_diet)
 
+# Purpoes: Gets all the food listed on a menu with the given ID
+def get_food_on_menu(database_file, menuID):
+    conn = sqlite3.connect(database_file)
 
-initialize_database("testDatabase.db")
+    curr = conn.cursor()
+    curr.execute("SELECT Name,CaloriesPerServing,Price FROM Food WHERE MenuID=?", (menuID,))
+
+    food_on_menu = curr.fetchall()
+
+    return(food_on_menu)
+
+# Purpose: Gets all the food listed in an inventory with the given ID
+def get_food_in_inventory(database_file, inventoryID):
+    conn = sqlite3.connect(database_file)
+
+    curr = conn.cursor()
+    curr.execute("SELECT Name,QuantityInStock FROM Food WHERE inventoryID=?", (inventoryID,))
+
+    food_in_inventory = curr.fetchall()
+
+    return(food_in_inventory) 
+
+# Purpose: Gets all food in the inventory that have more than zero items
+def get_nonempty_food_from_inventory(database_file, inventoryID):
+    conn = sqlite3.connect(database_file)
+
+    curr = conn.cursor()
+    curr.execute("SELECT Name,QuantityInStock FROM Food WHERE inventoryID=? AND QuantityInStock > 0", (inventoryID,) )
+
+    nonempty_food_in_inventory = curr.fetchall()
+
+    return(nonempty_food_in_inventory)
+
+# Purpose: Gets the number of food items for a given menu
+def get_number_of_food_items(database_file, menuID):
+    conn = sqlite3.connect(database_file)
+
+    curr = conn.cursor()
+
+    curr.execute("SELECT COUNT(*) as numOfFoods FROM Food WHERE MenuID=?", (menuID,))
+
+    numOfFoods = curr.fetchone()
+
+    return(numOfFoods[0]) # Get the first argument of the tuple
+
+initialize_database("ManyMenus.db")

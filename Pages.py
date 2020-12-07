@@ -6,6 +6,7 @@ import datetime
  
 import os
 
+
 def resource_path(relative_path):
     try:
         base_path = sys._MEIPASS
@@ -35,6 +36,7 @@ class Application(tk.Tk):
 
 # Page not done. This is a sample for everyone to use to know how to interact with the other pages
 class Login(tk.Frame):
+
     def __init__(self, master):
         tk.Frame.__init__(self, master)
         self.configure(bg = '#6FA8DD')
@@ -55,7 +57,9 @@ class Login(tk.Frame):
                     invalid.after(3000, invalid.destroy)
                 
                 else:
-                    master.switch_frame(RestaurantUpdateMenu)
+                    global res_name
+                    res_name = user_entry.get()
+                    master.switch_frame(RestaurantUpdateInfo) #RestaurantUpdateMenu
         
             elif not res_account.get() and user_account.get():
                 valid = validate_password('TestDatabase2.db', user_entry.get(), pass_entry.get())
@@ -66,6 +70,8 @@ class Login(tk.Frame):
                     invalid.after(3000, invalid.destroy)
 
                 else:
+                    global user_name
+                    user_name = user_entry.get()
                     master.switch_frame(Browse)
             
             elif not res_account.get() and not user_account.get():
@@ -80,8 +86,8 @@ class Login(tk.Frame):
 
         # buttons
         login = tk.Button(self, text = 'Login', width = 8, height = 2, command = lambda: submit(res_account, user_account))
-        create_user = tk.Button(self, text = 'Create new user account', wraplength = 100, justify = tk.CENTER, width = 14, height = 3, command = lambda: master.switch_frame(CustomerCreateAccount))
-        create_res = tk.Button(self, text = 'Create new restaurant account', wraplength = 100, justify = tk.CENTER, width = 14, height = 3, command = lambda: master.switch_frame(RestaurantCreateAccount))
+        create_user = tk.Button(self, text = 'Create new user account', wraplength = 100, justify = tk.CENTER, width = 14, height = 3, command = lambda: master.switch_frame(UpdateUserInfo)) #CustomerCreateAccount
+        create_res = tk.Button(self, text = 'Create new restaurant account', wraplength = 100, justify = tk.CENTER, width = 14, height = 3, command = lambda: master.switch_frame(RestaurantCreateAccount)) # RestaurantCreateAccount
 
         # text boxes
         user_entry = tk.Entry(self, width = 35, relief = tk.GROOVE)
@@ -126,7 +132,17 @@ class RestaurantCreateAccount(tk.Frame):
 
         # submit user account
         def submit():
-            SQLWrapper.create_restaurant('TestDatabase2.db', (state_entry.get(), city_entry.get(), street_entry.get(), pass_entry.get(), user_entry.get(), store_entry.get(), phone_entry.get()))
+            try:
+                SQLWrapper.create_restaurant('TestDatabase2.db', (state_entry.get(), city_entry.get(), street_entry.get(), pass_entry.get(), user_entry.get(), store_entry.get(), phone_entry.get()))
+            
+            except:
+               invalid = tk.Label(self, text = 'Invalid Field')
+               invalid.place(relx = .5, rely = .9, anchor = tk.N) 
+               invalid.after(3000, invalid.destroy)
+               return
+            
+            global res_name
+            res_name = user_entry.get()
             master.switch_frame(RestaurantUpdateMenu)
 
         # wayyyyy too many labels for this screen
@@ -224,6 +240,8 @@ class CustomerCreateAccount(tk.Frame):
                invalid.after(3000, invalid.destroy)
                return
 
+            global user_name
+            user_name = user_entry.get()
             master.switch_frame(Browse)
 
         # lables for this screen
@@ -300,10 +318,22 @@ class RestaurantUpdateInfo(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
         self.configure(bg = '#6FA8DD')
-        # harrison
+
+        global res_name
+        user = res_name
+
+        def submit(password, state, city, street, user, store, phone):
+            #try:
+            SQLWrapper.update_restaurant_info('TestDatabase2.db', user, (state, city, street, password, user, store, phone))
+
+            #except:
+            #    invalid = tk.Label(self, text = 'Invalid Field')
+            #    invalid.place(relx = .5, rely = .6, anchor = tk.N)
+            #    invalid.after(3000, invalid.destroy)
+            #    return
 
         # text labels
-        res_name = tk.Label(self, text = 'Insert Restauraunt name', bg = '#6FA8DD')
+        res_name = tk.Label(self, text = res_name, bg = '#6FA8DD', font = ('helvetica', 11))
         title = tk.Label(self, text = 'Restaurant Info', bg = '#6FA8DD', font = ('helvetica', 14, 'bold'))
         name_label = tk.Label(self, text = 'Restaurant Name:', bg = '#6FA8DD')
         address_label = tk.Label(self, text = 'Restaurant Address:', bg = '#6FA8DD')
@@ -314,22 +344,62 @@ class RestaurantUpdateInfo(tk.Frame):
 
 
         # buttons
-        update_menu = tk.Button(self, text = 'Update Menu', command = lambda: master.switch_frame(RestaurantUpdateMenu))
-        update_inven = tk.Button(self, text = 'Update Inventory', command = lambda: master.switch_frame(RestaurantUpdateInventory))
-        save = tk.Button(self, text = 'Save changes')
+        update_menu = tk.Button(self, text = 'Update Menu', height = 2, width = 13, command = lambda: master.switch_frame(RestaurantUpdateMenu))
+        update_inven = tk.Button(self, text = 'Update Inventory', height = 2, command = lambda: master.switch_frame(RestaurantUpdateInventory))
+        save = tk.Button(self, text = 'Save changes', height = 2, command = lambda: submit(pass_entry.get(), state_entry.get(), city_entry.get(), address_entry.get(), user, name_entry.get(), phone_entry.get()))
 
 
         # text boxes
         name_entry = tk.Entry(self, relief = tk.GROOVE, width = 35)
         address_entry = tk.Entry(self, relief = tk.GROOVE, width = 35)
-        city_entry = tk.Entry(self, relief = tk.GROOVE, width = 35)
+        city_entry = tk.Entry(self, relief = tk.GROOVE, width = 19)
         state_entry = tk.Entry(self, relief = tk.GROOVE, width = 4)
         phone_entry = tk.Entry(self, relief = tk.GROOVE, width = 35)
         pass_entry = tk.Entry(self, relief = tk.GROOVE, width = 35, show = '•')
 
 
-        #
+        # Many Menus Logo
+        load = Image.open(resource_path('many_menus.png')).resize((163, 106), Image.ANTIALIAS)
+        self.render = ImageTk.PhotoImage(load)
+        img = tk.Label(image = self.render, borderwidth = 3, bg = 'black')
 
+
+        # placing logo, title, update buttons
+        img.place(relx = .05, rely = .02)
+        res_name.place(relx = .5, rely = .08, anchor = tk.N)
+        title.place(relx = .5, rely = .2, anchor = tk.N)
+        update_menu.place(relx = .8, rely = .03, anchor = tk.N)
+        update_inven.place(relx = .8, rely = .1, anchor = tk.N)
+
+
+        # restaurant name stuff
+        name_label.place(relx = .3, rely = .26, anchor = tk.N)
+        name_entry.place(relx = .6, rely = .263, anchor = tk.N)
+
+
+        # address stuff
+        address_label.place(relx = .305, rely = .306, anchor = tk.N)
+        address_entry.place(relx = .6, rely = .309, anchor = tk.N)
+        
+        city_label.place(relx = .24, rely = .352, anchor = tk.N)
+        city_entry.place(relx = .4, rely = .352, anchor = tk.N)
+        
+        state_label.place(relx = .58, rely = .352, anchor = tk.N)
+        state_entry.place(relx = .67, rely = .352, anchor = tk.N)
+
+
+        # phone number
+        phone_label.place(relx = .29, rely = .398, anchor = tk.N)
+        phone_entry.place(relx = .6, rely = .398, anchor = tk.N)
+
+
+        # password
+        pass_label.place(relx = .29, rely = .444, anchor = tk.N)
+        pass_entry.place(relx = .6, rely = .444, anchor = tk.N)
+
+
+        # save button
+        save.place(relx = .5, rely = .52, anchor = tk.N)
 
         return
 

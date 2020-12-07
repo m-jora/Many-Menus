@@ -551,5 +551,14 @@ def get_nonempty_food_from_inventory(database_file, inventoryID):
 
     return(nonempty_food_in_inventory)
 
+# Purpose: Gets the number of food items for a given menu
+def get_number_of_food_items(database_file, menuID):
+    conn = sqlite3.connect(database_file)
 
-initialize_database("testDatabase.db")
+    curr = conn.cursor()
+
+    curr.execute("SELECT COUNT(*) as numOfFoods FROM Food WHERE MenuID=?", (menuID,))
+
+    numOfFoods = curr.fetchone()
+
+    return(numOfFoods[0]) # Get the first argument of the tuple

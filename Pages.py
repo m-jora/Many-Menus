@@ -466,9 +466,15 @@ class UpdateUserInfo(tk.Frame):
 
         def get_location():
             new_location.after(0, new_location.destroy)
+            state = tk.Entry(self, relief = tk.GROOVE)
+            city = tk.Entry(self, relief = tk.GROOVE)
+            place = (city.get(), state.get())
 
-        def add_location():
-            pass
+            add_location(place)
+
+
+        def add_location(place):
+            SQLWrapper.create_customer_locations('TestDatabase2.db', (user, place[0], place[1], 5))
 
         # text labels
         user_label = tk.Label(self, text = user, bg = '#6FA8DD', font = ('helvetica', 11))

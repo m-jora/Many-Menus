@@ -494,8 +494,8 @@ class UpdateUserInfo(tk.Frame):
         tk.Frame.__init__(self, master)
         self.configure(bg = '#6FA8DD')
 
-        loca_default = .34
-        diet_default = .64
+        self.loca_default = .34
+        self.diet_default = .64
 
         global user_name
         user = user_name
@@ -508,9 +508,35 @@ class UpdateUserInfo(tk.Frame):
 
         def get_location():
             new_location.after(0, new_location.destroy)
+            names = tk.Label(self, text = 'City, State')
+            city = tk.Entry(self, relief = tk.GROOVE)
+            state = tk.Entry(self, relief = tk.GROOVE)
+            submit = tk.Button(self, text = 'Submit', command = lambda: add_location(city.get(), state.get()))
+            
+            names.place(relx = .5, rely = self.loca_default + .02, anchor = tk.N)
+            state.place(relx = .6, rely = self.loca_default, anchor = tk.N)
+            city.place(relx = .4, rely = self.loca_default, anchor = tk.N)
+            submit.place(relx = .5, rely = self.loca_default + .1, anchor = tk.N)
 
-        def add_location():
-            pass
+        def add_location(city, state):
+            try:
+                SQLWrapper.create_customer_locations('TestDatabase2.db', (user, city, state, 5))
+            
+            except:
+                invalid = tk.Label(self, text = 'Invalid Field')
+                invalid.place(relx = .5, rely = self.loca_default + .2)
+                invalid.after(3000, invalid.destroy)
+                self.loca_default -= .05
+
+            state.after(0, state.destroy)
+            city.after(0, city.destroy)
+            names.after(0, names.destroy)
+            submit.after(0, submit.destroy)
+
+            self.loca_default += .05
+            new_location.place(relx = .5, rely = self.loca_default, anchor = tk.N)
+
+
 
         # text labels
         user_label = tk.Label(self, text = user, bg = '#6FA8DD', font = ('helvetica', 11))
@@ -552,8 +578,8 @@ class UpdateUserInfo(tk.Frame):
 
         # add button place
         # shift these based on locaitons and diets
-        new_location.place(relx = .5, rely = loca_default, anchor = tk.N)
-        new_diet.place(relx = .5, rely = diet_default, anchor = tk.N)
+        new_location.place(relx = .5, rely = self.loca_default, anchor = tk.N)
+        new_diet.place(relx = .5, rely = self.diet_default, anchor = tk.N)
         return
 
 class Browse(tk.Frame):

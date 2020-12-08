@@ -22,7 +22,6 @@ def create_table(conn, create_table_sql):
     except Error as e:
         print(e)
 
-
 # Purpose: Creates the database for the Many Menus GUI
 def initialize_database(database_file):
     
@@ -156,7 +155,24 @@ def initialize_database(database_file):
                 FOREIGN KEY(RestaurantUsername) REFERENCES RestaurantUsername(Restaurant),
                 FOREIGN KEY(InventoryID) REFERENCES InventoryID(Inventory)  
         )""")
-   
+
+        create_table(database, """
+            CREATE TABLE IF NOT EXISTS Dish(
+                DishID TEXT,
+                DishName TEXT,
+                MenuID TEXT,
+                FOREIGN KEY(MenuID) REFERENCES MenuID(Menu)
+        )""")
+
+        # Consists of the food items that make up a dish
+        create_table(database, """
+            CREATE TABLE IF NOT EXISTS DishFoods(
+                DishID TEXT,
+                FoodName TEXT,
+                FOREIGN KEY(DishID) REFERENCES DishID(Restaurant),
+                FOREIGN KEY(FoodName) REFERENCES Name(Food)
+            )""")
+
 ###################################################################
 # The following functions are SQL commands for inserting data     #
 # into the various tables of our database                         #
@@ -286,6 +302,24 @@ def create_inventory(database_file, inventory_data):
 
     cur = conn.cursor()
     cur.execute(sqlCommand, inventory_data)
+    conn.commit()
+
+def create_dish(database_file, dish_data):
+    conn = sqlite3.connect(database_file)
+
+    sqlCommand = '''INSERT INTO Dish(DishID, DishName, MenuID) VALUES (?,?,?)'''
+
+    cur = conn.cursor()
+    cur.execute(sqlCommand, dish_data)
+    conn.commit()
+
+def create_dish_foods(database_file, dish_food_data):
+    conn = sqlite3.connect(database_file)
+
+    sqlCommand = '''INSERT INTO DishFoods(DishID, FoodName) VALUES (?,?)'''
+
+    cur = conn.cursor()
+    cur.execute(sqlCommand, dish_food_data)
     conn.commit()
 
 ###################################################################
@@ -563,5 +597,34 @@ def get_number_of_food_items(database_file, menuID):
     numOfFoods = curr.fetchone()
 
     return(numOfFoods[0]) # Get the first argument of the tuple
+
+def get_dishes_on_menu(database_file, menuID):
+    conn = sqlite3.connect(database_file)
+
+    curr = conn.cursor()
+    curr.execute("SELECT DishName FROM Dish WHERE MenuID=?", (menuID,))
+    dishes = curr.fetchone()
+
+    return dishes[0]
+
+def get_food_for_dish(database_file, dishID):
+    conn = sqlite3.connect(database_file)
+
+    curr = conn.cursor()
+    curr.execute("SELECT FoodName FROM DishFoods WHERE dishID=?", (dishID,))
+    
+    foods = curr.fetchall()
+
+    return foods
+
+def get_dishes_for_menu(database_file, menuID):
+    conn = sqlite3.connect(database_file)
+
+    curr = conn.cursor()
+    curr.execute("SELECT DishName FROM Dish WHERE MenuID=?", (menuID,))
+
+    dishes = curr.fetchall()
+
+    return dishes
 
 initialize_database("ManyMenus.db")

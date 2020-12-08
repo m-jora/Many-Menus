@@ -411,14 +411,14 @@ class RestaurantUpdateInventory(tk.Frame):
         img = tk.Label(image = self.render, borderwidth = 3, bg = 'black')
 
         # buttons
-        update_info = tk.Button(self, text = 'Update Info', height = 2, width = 13)
-        update_menu = tk.Button(self, text = 'Update Menu', height = 2, width = 13)
-        remove_ingredient = tk.Button(self, text = 'remove', height = 1, width = 12)
+        update_info = tk.Button(self, text = 'Update Info', height = 2, width = 13, command = lambda: master.switch_frame(UpdateUserInfo))
+        update_menu = tk.Button(self, text = 'Update Menu', height = 2, width = 13, command = lambda: master.switch_frame(RestaurantUpdateMenu))
+        remove_ingredient = tk.Button(self, text = 'remove', height = 1, width = 11)
         # command is save amount
-        save_amount = tk.Button(self, text = 'save amount', height = 1, width = 12) 
+        save_amount = tk.Button(self, text = 'save amount', height = 1, width = 11) 
         # opens text box to type in new amount
         update_amount = tk.Button(self, text = 'update amount', height = 1, width = 12) 
-        add_new_ingredient = tk.Button(self, text = 'Add new ingredient', height = 1, width = 13)
+        add_new_ingredient = tk.Button(self, text = 'Add new ingredient', height = 1, width = 15)
 
         # display image, restaurant name, title, change page buttons
         img.place(relx = .05, rely = .02)
@@ -429,21 +429,63 @@ class RestaurantUpdateInventory(tk.Frame):
 
         # display table (ingredient name, remove, amount label, amount, update amount button)
         ingredient_name_label.place(relx = .3, rely = .4, anchor = tk.N)
-        remove_ingredient.place(relx = .5, rely = .4, anchor = tk.N)
+        remove_ingredient.place(relx = .6, rely = .4, anchor = tk.N)
         amount_label.place(relx = .3, rely = .5, anchor = tk.N)
         ingredient_amount_label.place(relx = .4, rely = .5, anchor = tk.N)
-        save_amount.place(relx = .5, rely = .5, anchor = tk.N)
+        save_amount.place(relx = .6, rely = .5, anchor = tk.N)
         add_new_ingredient.place(relx = .3, rely = .6, anchor = tk.N)
 
         return
 
 class RestaurantUpdateMenu(tk.Frame):
     def __init__(self, master):
+        # main frame
+        tk.Frame.__init__(self, master)
+        self.configure(bg = '#6FA8DD')
+
+        global res_name
+        user = res_name
+
+        # text labels
+        res_name_label = tk.Label(self, text = res_name, bg = '#6FA8DD', font = ('helvetica', 11))
+        title_label = tk.Label(self, text = 'Update Menu', bg = '#6FA8DD', font = ('helvetica', 14, 'bold'))
+        dish_name_label = tk.Label(self, text = 'dish 1', bg = '#6FA8DD', font = ('helvetica', 11))
+        price_label = tk.Label(self, text = '$' + '11.11', bg = '#6FA8DD', font = ('helvetica', 11))
+        ingredient_name_label = tk.Label(self, text = 'ingredient 1', bg = '#6FA8DD', font = ('helvetica', 11))
+        ingredient_amount_label = tk.Label(self, text = '1 oz', bg = '#6FA8DD', font = ('helvetica', 11))
+
+        # buttons
+        update_info = tk.Button(self, text = 'Update Info', height = 2, width = 13, command = lambda: master.switch_frame(RestaurantUpdateInfo))
+        update_inv = tk.Button(self, text = 'Update Inventory', height = 2, width = 13, command = lambda: master.switch_frame(RestaurantUpdateInventory))
+        # command to save changes
+        save = tk.Button(self, text = 'save', height = 1, width = 8)
+        # command to open text boxes
+        update = tk.Button(self, text = 'update', height = 1, width = 8)
+        remove = tk.Button(self, text = 'remove', height = 1, width = 8)
+        add_ingredient = tk.Button(self, text = 'add ingredient', height = 1, width = 14)
+        add_dish = tk.Button(self, text = 'add new dish', height = 1, width = 14)
 
         # Many Menus Logo
         load = Image.open(resource_path('many_menus.png')).resize((163, 106), Image.ANTIALIAS)
         self.render = ImageTk.PhotoImage(load)
         img = tk.Label(image = self.render, borderwidth = 3, bg = 'black')
+
+        # display image, restaurant name, title, change page buttons
+        img.place(relx = .05, rely = .02)
+        res_name_label.place(relx = .5, rely = .08, anchor = tk.N)
+        title_label.place(relx = .5, rely = .2, anchor = tk.N)
+        update_info.place(relx = .8, rely = .03, anchor = tk.N)
+        update_inv.place(relx = .8, rely = .1, anchor = tk.N)
+
+        # display table (dish name, price, update. ingredient name, amount, remove. add ingredient. add new dish)
+        dish_name_label.place(relx = .3, rely = .3, anchor = tk.N)
+        price_label.place(relx = .4, rely = .3, anchor = tk.N)
+        update.place(relx = .6, rely = .3, anchor = tk.N)
+        ingredient_name_label.place(relx = .3, rely = .4, anchor = tk.N)
+        ingredient_amount_label.place(relx = .4, rely = .4, anchor = tk.N)
+        remove.place(relx = .5, rely = .4, anchor = tk.N)
+        add_ingredient.place(relx = .3, rely = .5, anchor = tk.N)
+        add_dish.place(relx = .3, rely = .6, anchor = tk.N)
 
         return
 
@@ -516,6 +558,30 @@ class UpdateUserInfo(tk.Frame):
 
 class Browse(tk.Frame):
     def __init__(self, master):
+        # main frame
+        tk.Frame.__init__(self, master)
+        self.configure(bg = '#6FA8DD')
+
+        global user_name
+
+        # text labels
+        username_label = tk.Label(self, text = user_name, bg = '#6FA8DD', font = ('helvetica', 11))
+        title_label = tk.Label(self, text = 'Browse Menus', bg = '#6FA8DD', font = ('helvetica', 14, 'bold'))
+
+        # button variables
+        loc_var = tk.IntVar()
+        res_var = tk.IntVar()
+        diet_var = tk. IntVar()
+
+        # buttons
+        update_info = tk.Button(self, text = 'Update Info', bg = '#6FA8DD', font = ('helvetica', 11))
+        loc_check = tk.Checkbutton(self, text = 'Filter by favorite locations', variable = loc_var, bg = '#6FA8DD', activebackground = '#6FA8DD')
+        res_check = tk.Checkbutton(self, text = 'Filter by favorite restaurants', variable = res_var, bg = '#6FA8DD', activebackground = '#6FA8DD')
+        diet_check = tk.Checkbutton(self, text = 'Filter by diet', variable = diet_var, bg = '#6FA8DD', activebackground = '#6FA8DD')
+        see_more = tk.Button(self, text = 'see more', bg = '#6FA8DD', font = ('helvetica', 11))
+        see_less = tk.Button(self, text = 'see less', bg = '#6FA8DD', font = ('helvetica', 11))
+        see_last_searched = tk.Button(self, text = 'see last searched', bg = '#6FA8DD', font = ('helvetica', 11))
+
 
         # Many Menus Logo
         load = Image.open(resource_path('many_menus.png')).resize((163, 106), Image.ANTIALIAS)

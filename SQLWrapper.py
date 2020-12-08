@@ -598,14 +598,6 @@ def get_number_of_food_items(database_file, menuID):
 
     return(numOfFoods[0]) # Get the first argument of the tuple
 
-def get_dishes_on_menu(database_file, menuID):
-    conn = sqlite3.connect(database_file)
-
-    curr = conn.cursor()
-    curr.execute("SELECT DishName FROM Dish WHERE MenuID=?", (menuID,))
-    dishes = curr.fetchone()
-
-    return dishes[0]
 
 def get_food_for_dish(database_file, dishID):
     conn = sqlite3.connect(database_file)

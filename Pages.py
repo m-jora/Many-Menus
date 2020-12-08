@@ -428,12 +428,12 @@ class RestaurantUpdateInventory(tk.Frame):
         update_menu.place(relx = .8, rely = .1, anchor = tk.N)
 
         # display table (ingredient name, remove, amount label, amount, update amount button)
-        ingredient_name_label.place(relx = .2, rely = .4, anchor = tk.N)
-        remove_ingredient.place(relx = .3, rely = .4, anchor = tk.N)
-        amount_label.place(relx = .2, rely = .45, anchor = tk.N)
-        ingredient_amount_label.place(relx = .25, rely = .45, anchor = tk.N)
-        save_amount.place(relx = .3, rely = .45, anchor = tk.N)
-        add_new_ingredient.place(relx = .2, rely = .5, anchor = tk.N)
+        ingredient_name_label.place(relx = .3, rely = .4, anchor = tk.N)
+        remove_ingredient.place(relx = .5, rely = .4, anchor = tk.N)
+        amount_label.place(relx = .3, rely = .5, anchor = tk.N)
+        ingredient_amount_label.place(relx = .4, rely = .5, anchor = tk.N)
+        save_amount.place(relx = .5, rely = .5, anchor = tk.N)
+        add_new_ingredient.place(relx = .3, rely = .6, anchor = tk.N)
 
         return
 

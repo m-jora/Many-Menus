@@ -545,6 +545,17 @@ def get_restaurant_info(database_file, restaurant_username):
 
     return(store_info)
 
+# Purpose: Returns the restaurant store name with a given username
+def get_restaurant_name(database_file, restaurant_username):
+    conn =  sqlite3.connect(database_file)
+
+    curr = conn.cursor()
+    curr.execute("SELECT StoreName FROM Restaurant WHERE Username = ?", (restaurant_username,))
+
+    store_name = curr.fetchall()
+
+    return store_name
+
 # Purpose: Gets food that adheres to a certain diet
 def get_adhere_to(database_file, diet_name):
     conn = sqlite3.connect(database_file)

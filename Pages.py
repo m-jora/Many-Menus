@@ -465,18 +465,19 @@ class UpdateUserInfo(tk.Frame):
             pass
 
         def get_location():
-            new_location.after(0, new_location.destroy)
-            names = tk.Label(self, text = 'City, State')
-            city = tk.Entry(self, relief = tk.GROOVE)
-            state = tk.Entry(self, relief = tk.GROOVE)
-            submit = tk.Button(self, text = 'Submit', command = lambda: add_location(city.get(), state.get()))
+            self.new_location.after(0, self.new_location.destroy)
+            self.names = tk.Label(self, text = 'City, State', bg = '#6FA8DD')
+            self.city_n = tk.Entry(self, relief = tk.GROOVE, width = 19)
+            self.state_n = tk.Entry(self, relief = tk.GROOVE, width = 4)
+            self.submit = tk.Button(self, text = 'Submit', command = lambda: add_location(self.city_n.get(), self.state_n.get()))
             
-            names.place(relx = .5, rely = self.loca_default + .02, anchor = tk.N)
-            state.place(relx = .6, rely = self.loca_default, anchor = tk.N)
-            city.place(relx = .4, rely = self.loca_default, anchor = tk.N)
-            submit.place(relx = .5, rely = self.loca_default + .1, anchor = tk.N)
+            self.names.place(relx = .5, rely = self.loca_default + .03, anchor = tk.N)
+            self.state_n.place(relx = .7, rely = self.loca_default, anchor = tk.N)
+            self.city_n.place(relx = .5, rely = self.loca_default, anchor = tk.N)
+            self.submit.place(relx = .5, rely = self.loca_default + .07, anchor = tk.N)
 
         def add_location(city, state):
+            
             try:
                 SQLWrapper.create_customer_locations('TestDatabase2.db', (user, city, state, 5))
             
@@ -486,13 +487,13 @@ class UpdateUserInfo(tk.Frame):
                 invalid.after(3000, invalid.destroy)
                 self.loca_default -= .05
 
-            state.after(0, state.destroy)
-            city.after(0, city.destroy)
-            names.after(0, names.destroy)
-            submit.after(0, submit.destroy)
+            self.state_n.after(0, self.state_n.destroy)
+            self.city_n.after(0, self.city_n.destroy)
+            self.names.after(0, self.names.destroy)
+            self.submit.after(0, self.submit.destroy)
 
             self.loca_default += .05
-            new_location.place(relx = .5, rely = self.loca_default, anchor = tk.N)
+            self.new_location.place(relx = .5, rely = self.loca_default, anchor = tk.N)
 
 
 
@@ -506,14 +507,20 @@ class UpdateUserInfo(tk.Frame):
         # add loop for adding in labels for diet and locations?
         locations = SQLWrapper.get_customer_locations('TestDatabase2.db', user)
         diet = SQLWrapper.get_diet_for_user('TestDatabase2.db', user)
-        print(locations)
-        print(diet)
+        for place in locations:
+            L = tk.Label(self, text = place[0] + ', ' + place[1], bg = '#6FA8DD')
+            L.place(relx = .5, rely = self.loca_default, anchor = tk.N)
+            self.loca_default += .04
 
+        for diets in diet:
+            D = tk.Label(self, text = diets[0] + ' ' + str(diets[1]), bg = '#6FA8DD')
+            D.place(relx = .5, rely = self.diet_default, anchor = tk.N)
+            self.diet_default += .04
 
         # button
         back = tk.Button(self, text = 'Back to Browse', height = 2, command = lambda: master.switch_frame(Browse))
-        new_location = tk.Button(self, text = 'Add New location', command = get_location)
-        new_diet = tk.Button(self, text = 'Add new Diet', command = get_diet)
+        self.new_location = tk.Button(self, text = 'Add New location', command = get_location)
+        self.new_diet = tk.Button(self, text = 'Add new Diet', command = get_diet)
 
 
         # Many Menus Logo
@@ -536,8 +543,8 @@ class UpdateUserInfo(tk.Frame):
 
         # add button place
         # shift these based on locaitons and diets
-        new_location.place(relx = .5, rely = self.loca_default, anchor = tk.N)
-        new_diet.place(relx = .5, rely = self.diet_default, anchor = tk.N)
+        self.new_location.place(relx = .5, rely = self.loca_default, anchor = tk.N)
+        self.new_diet.place(relx = .5, rely = self.diet_default, anchor = tk.N)
         return
 
 class Browse(tk.Frame):

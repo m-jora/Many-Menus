@@ -503,7 +503,7 @@ def get_customer_locations(database_file, username):
     conn = sqlite3.connect(database_file)
 
     curr = conn.cursor()
-    curr. execute("SELECT * FROM CustomerLocations WHERE Username=?", (username,))
+    curr. execute("SELECT City, State FROM CustomerLocations WHERE Username=?", (username,))
 
     customer_location_info = curr.fetchall()
 
@@ -525,7 +525,7 @@ def get_diet_for_user(database_file, customer_username):
     conn = sqlite3.connect(database_file)
 
     curr = conn.cursor()
-    curr.execute("SELECT * FROM Diet WHERE Username=?", (customer_username,))
+    curr.execute("SELECT DietName, CalorieLimit FROM Diet WHERE CustomerUsername=?", (customer_username,))
 
     diet_info = curr.fetchall()
 

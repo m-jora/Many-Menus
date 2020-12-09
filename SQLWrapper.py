@@ -83,7 +83,6 @@ def initialize_database(database_file):
                 Username TEXT,
                 City TEXT NOT NULL,
                 State TEXT NOT NULL,
-                CustomerLocationsID TEXT PRIMARY KEY,
                 FOREIGN KEY(Username) REFERENCES Username(Customer)
             )""")
 
@@ -226,7 +225,7 @@ def create_customer(database_file, customer_data):
 def create_customer_locations(database_file, customer_locations_data):
     conn = sqlite3.connect(database_file)
 
-    sqlCommand = '''INSERT INTO CustomerLocations(Username,City,State,CustomerLocationsID) VALUES (?,?,?,?)'''
+    sqlCommand = '''INSERT INTO CustomerLocations(Username,City,State) VALUES (?,?,?)'''
 
     cur = conn.cursor()
     cur.execute(sqlCommand, customer_locations_data)
@@ -597,15 +596,6 @@ def get_number_of_food_items(database_file, menuID):
     numOfFoods = curr.fetchone()
 
     return(numOfFoods[0]) # Get the first argument of the tuple
-
-def get_dishes_on_menu(database_file, menuID):
-    conn = sqlite3.connect(database_file)
-
-    curr = conn.cursor()
-    curr.execute("SELECT DishName FROM Dish WHERE MenuID=?", (menuID,))
-    dishes = curr.fetchone()
-
-    return dishes[0]
 
 def get_food_for_dish(database_file, dishID):
     conn = sqlite3.connect(database_file)

@@ -501,10 +501,44 @@ class UpdateUserInfo(tk.Frame):
         user = user_name
 
         def get_diet():
-            pass
+            self.new_diet.after(0, self.new_diet.destroy)
+            self.names = tk.Label(self, text = 'Diet, Calorie Limit', bg = '#6FA8DD')
+            self.diet_n = tk.Entry(self, relief = tk.GROOVE, width = 19)
+            self.limit_n = tk.Entry(self, relief = tk.GROOVE, width = 4)
+            self.submit = tk.Button(self, text = 'Submit', command = lambda: add_diet(self.diet_n.get(), self.limit_n.get()))
+            
+            self.names.place(relx = .5, rely = self.diet_default + .03, anchor = tk.N)
+            self.diet_n.place(relx = .47, rely = self.diet_default, anchor = tk.N)
+            self.limit_n.place(relx = .6, rely = self.diet_default, anchor = tk.N)
+            self.submit.place(relx = .5, rely = self.diet_default + .07, anchor = tk.N)
 
-        def add_diet():
-            pass
+        def add_diet(diet, limit):
+            invalid = False
+            try:
+                SQLWrapper.create_diet('TestDatabase2.db', (diet, user, limit))
+            
+            except:
+                invalid = tk.Label(self, text = 'Invalid Field')
+                invalid.place(relx = .3, rely = self.loca_default + .2)
+                invalid.after(3000, invalid.destroy)
+                self.loca_default -= .05
+                invalid = True
+
+            self.diet_n.after(0, self.diet_n.destroy)
+            self.limit_n.after(0, self.limit_n.destroy)
+            self.names.after(0, self.names.destroy)
+            self.submit.after(0, self.submit.destroy)
+
+            self.diet_default += .05
+            self.new_diet = tk.Button(self, text = 'Add New Diet', command = get_diet)
+            self.new_diet.place(relx = .5, rely = self.diet_default, anchor = tk.N)
+
+            if not invalid:
+                diets = SQLWrapper.get_diet_for_user('TestDatabase2.db', user)
+
+                D = tk.Label(self, text  = diets[-1][0] + ' ' + str(diets [-1][1]), bg = '#6FA8DD')
+                D.place(relx = .5, rely = self.diet_default - .05, anchor = tk.N)
+
 
         def get_location():
             self.new_location.after(0, self.new_location.destroy)
@@ -541,9 +575,6 @@ class UpdateUserInfo(tk.Frame):
 
             if not invalid:
                 locations = SQLWrapper.get_customer_locations('TestDatabase2.db', user)
-            
-                print(locations)
-                print(locations[-1])
 
                 L = tk.Label(self, text  = locations[-1][0] + ', ' + locations [-1][1], bg = '#6FA8DD')
                 L.place(relx = .5, rely = self.loca_default - .05, anchor = tk.N)

@@ -93,7 +93,9 @@ def initialize_database(database_file):
                 DietName TEXT PRIMARY KEY,
                 CustomerUsername TEXT,
                 CalorieLimit INTEGER,
-                FOREIGN KEY(CustomerUsername) REFERENCES Username(Customer)
+                FOREIGN KEY(CustomerUsername) REFERENCES Username(Customer),
+                CHECK(length(DietName) >= 1)
+                CHECK(length(CalorieLimit) >= 1)
             )""")
 
         create_table(database, """

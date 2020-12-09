@@ -46,7 +46,7 @@ class Login(tk.Frame):
                 invalid.after(3000, invalid.destroy)
 
             elif res_account.get() and not user_account.get():
-                valid = validate_res_password('TestDatabase2.db', user_entry.get(), pass_entry.get())
+                valid = validate_res_password('ManyMenus.db', user_entry.get(), pass_entry.get())
 
                 if not valid:
                     invalid = tk.Label(self, text = 'Invalid username / Password')
@@ -55,11 +55,11 @@ class Login(tk.Frame):
                 
                 else:
                     global res_name
-                    res_name = SQLWrapper.get_restaurant_name('TestDatabase2.db', user_entry.get())
-                    master.switch_frame(RestaurantUpdateInfo) #RestaurantUpdateMenu
+                    res_name = SQLWrapper.get_restaurant_name('ManyMenus.db', user_entry.get())[0][0]
+                    master.switch_frame(RestaurantUpdateMenu)
         
             elif not res_account.get() and user_account.get():
-                valid = validate_password('TestDatabase2.db', user_entry.get(), pass_entry.get())
+                valid = validate_password('ManyMenus.db', user_entry.get(), pass_entry.get())
 
                 if not valid:
                     invalid = tk.Label(self, text = 'Invalid username / password')
@@ -69,7 +69,7 @@ class Login(tk.Frame):
                 else:
                     global user_name
                     user_name = user_entry.get()
-                    master.switch_frame(UpdateUserInfo) # Browse
+                    master.switch_frame(Browse)
             
             elif not res_account.get() and not user_account.get():
                 invalid = tk.Label(self, text = 'Please select account type')
@@ -127,7 +127,7 @@ class RestaurantCreateAccount(tk.Frame):
         # Submit user account -- check to make sure that the information is valid
         def submit():
             try:
-                SQLWrapper.create_restaurant('TestDatabase2.db', (state_entry.get(), city_entry.get(), street_entry.get(), pass_entry.get(), user_entry.get(), store_entry.get(), phone_entry.get()))
+                SQLWrapper.create_restaurant('ManyMenus.db', (state_entry.get(), city_entry.get(), street_entry.get(), pass_entry.get(), user_entry.get(), store_entry.get(), phone_entry.get()))
             
             except:
                invalid = tk.Label(self, text = 'Invalid Field')
@@ -136,7 +136,7 @@ class RestaurantCreateAccount(tk.Frame):
                return
             
             global res_name
-            res_name = SQLWrapper.get_restaurant_name('TestDatabase2.db', user_entry.get())
+            res_name = SQLWrapper.get_restaurant_name('ManyMenus.db', user_entry.get())[0][0]
             master.switch_frame(RestaurantUpdateMenu)
 
         # Labels
@@ -221,7 +221,7 @@ class CustomerCreateAccount(tk.Frame):
             age = datetime.datetime.now().year - int(birthday_entry3.get())
 
             try:
-                SQLWrapper.create_customer('TestDatabase2.db', (user_entry.get(), name_entry.get(), pass_entry.get(), birthday, age))
+                SQLWrapper.create_customer('ManyMenus.db', (user_entry.get(), name_entry.get(), pass_entry.get(), birthday, age))
             
             except:
                invalid = tk.Label(self, text = 'Invalid Field')
@@ -305,7 +305,7 @@ class RestaurantUpdateInfo(tk.Frame):
 
         def submit(password, state, city, street, user, store, phone):
             try:
-                SQLWrapper.update_restaurant_info('TestDatabase2.db', (state, city, street, password, store, phone))
+                SQLWrapper.update_restaurant_info('ManyMenus.db', (state, city, street, password, store, phone))
 
             except:
                 invalid = tk.Label(self, text = 'Invalid Field')
@@ -503,6 +503,7 @@ class UpdateUserInfo(tk.Frame):
 
         def get_diet():
             self.new_diet.after(0, self.new_diet.destroy)
+            self.delete_diet.after(0, self.delete_diet.destroy)
             self.names = tk.Label(self, text = 'Diet, Calorie Limit', bg = '#6FA8DD')
             self.diet_n = tk.Entry(self, relief = tk.GROOVE, width = 19)
             self.limit_n = tk.Entry(self, relief = tk.GROOVE, width = 4)
@@ -517,7 +518,7 @@ class UpdateUserInfo(tk.Frame):
         def add_diet(diet, limit):
             invalid = False
             try:
-                SQLWrapper.create_diet('TestDatabase2.db', (diet, user, limit))
+                SQLWrapper.create_diet('ManyMenus.db', (diet, user, limit))
             
             except:
                 invalid = tk.Label(self, text = 'Invalid Field')
@@ -535,12 +536,15 @@ class UpdateUserInfo(tk.Frame):
             self.new_diet = tk.Button(self, text = 'Add New Diet', command = get_diet)
             self.new_diet.place(relx = .5, rely = self.diet_default, anchor = tk.N)
 
+            self.delete_diet = tk.Button(self, text = 'Delete Diet', command = get_diet2)
+            self.delete_diet.place(relx = .5, rely = self.diet_default + .1, anchor = tk.N)
+
             if not invalid:
-                diets = SQLWrapper.get_diet_for_user('TestDatabase2.db', user)
+                diets = SQLWrapper.get_diet_for_user('ManyMenus.db', user)
 
                 D = tk.Label(self, text  = diets[-1][0] + ' ' + str(diets [-1][1]), bg = '#6FA8DD')
                 D.place(relx = .5, rely = self.diet_default - .05, anchor = tk.N)
-
+                
 
         def get_location():
             self.new_location.after(0, self.new_location.destroy)
@@ -558,7 +562,7 @@ class UpdateUserInfo(tk.Frame):
         def add_location(city, state):
             invalid = False
             try:
-                SQLWrapper.create_customer_locations('TestDatabase2.db', (user, city, state))
+                SQLWrapper.create_customer_locations('ManyMenus.db', (user, city, state))
             
             except:
                 invalid = tk.Label(self, text = 'Invalid Field')
@@ -577,10 +581,39 @@ class UpdateUserInfo(tk.Frame):
             self.new_location.place(relx = .5, rely = self.loca_default, anchor = tk.N)
 
             if not invalid:
-                locations = SQLWrapper.get_customer_locations('TestDatabase2.db', user)
+                locations = SQLWrapper.get_customer_locations('ManyMenus.db', user)
 
                 L = tk.Label(self, text  = locations[-1][0] + ', ' + locations [-1][1], bg = '#6FA8DD')
                 L.place(relx = .5, rely = self.loca_default - .05, anchor = tk.N)
+
+
+        def get_diet2():
+            self.delete_diet.after(0, self.delete_diet.destroy)
+            self.names = tk.Label(self, text = 'Enter Diet Name', bg = '#6FA8DD')
+            self.diet = tk.Entry(self, relief = tk.GROOVE, width = 19)
+            self.submit = tk.Button(self, text = 'Delete', command = lambda: remove_diet(self.diet.get()))
+
+            self.names.place(relx = .5, rely = self.diet_default + .13, anchor = tk.N)
+            self.diet.place(relx = .5, rely = self.diet_default + .1, anchor = tk.N)
+            self.submit.place(relx = .5, rely = self.diet_default + .16, anchor = tk.N)
+
+
+        def remove_diet(diet_name):
+            invalid = False
+            try:
+                SQLWrapper.delete_diet('ManyMenus.db', (diet_name))
+
+            except:
+                invalid = tk.Label(self, text = 'Invalid Field')
+                invalid.place(relx = .3, rely = self.diet_default + .2)
+                invalid = True
+
+            self.names.after(0, self.names.destroy)
+            self.diet.after(0, self.diet.destroy)
+            self.submit.after(0, self.submit.destroy)
+
+            if not invalid:
+                master.switch_frame(UpdateUserInfo)
 
 
         # text labels
@@ -591,8 +624,9 @@ class UpdateUserInfo(tk.Frame):
 
 
         # add loop for adding in labels for diet and locations?
-        locations = SQLWrapper.get_customer_locations('TestDatabase2.db', user)
-        diet = SQLWrapper.get_diet_for_user('TestDatabase2.db', user)
+        locations = SQLWrapper.get_customer_locations('ManyMenus.db', user)
+        diet = SQLWrapper.get_diet_for_user('ManyMenus.db', user)
+        
         for place in locations:
             L = tk.Label(self, text = place[0] + ', ' + place[1], bg = '#6FA8DD')
             L.place(relx = .5, rely = self.loca_default, anchor = tk.N)
@@ -607,6 +641,7 @@ class UpdateUserInfo(tk.Frame):
         back = tk.Button(self, text = 'Back to Browse', height = 2, command = lambda: master.switch_frame(Browse))
         self.new_location = tk.Button(self, text = 'Add New location', command = get_location)
         self.new_diet = tk.Button(self, text = 'Add new Diet', command = get_diet)
+        self.delete_diet = tk.Button(self, text = 'Delete Diet', command = get_diet2)
 
 
         # Many Menus Logo
@@ -631,6 +666,7 @@ class UpdateUserInfo(tk.Frame):
         # shift these based on locaitons and diets
         self.new_location.place(relx = .5, rely = self.loca_default, anchor = tk.N)
         self.new_diet.place(relx = .5, rely = self.diet_default, anchor = tk.N)
+        self.delete_diet.place(relx = .5, rely = self.diet_default + .1, anchor = tk.N)
         return
 
 class Browse(tk.Frame):
@@ -684,6 +720,6 @@ def validate_res_password(database_file, username, entered_password):
     else:
         return True
 
-SQLWrapper.initialize_database("testDatabase2.db")
+SQLWrapper.initialize_database("ManyMenus.db")
 app = Application()
 app.mainloop()

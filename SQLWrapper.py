@@ -83,7 +83,9 @@ def initialize_database(database_file):
                 Username TEXT,
                 City TEXT NOT NULL,
                 State TEXT NOT NULL,
-                FOREIGN KEY(Username) REFERENCES Username(Customer)
+                FOREIGN KEY(Username) REFERENCES Username(Customer),
+                CHECK(length(City) >= 1),
+                CHECK(length(State) >= 1)
             )""")
 
         create_table(database, """

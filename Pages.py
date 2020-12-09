@@ -514,20 +514,21 @@ class UpdateUserInfo(tk.Frame):
             self.submit = tk.Button(self, text = 'Submit', command = lambda: add_location(self.city_n.get(), self.state_n.get()))
             
             self.names.place(relx = .5, rely = self.loca_default + .03, anchor = tk.N)
-            self.state_n.place(relx = .7, rely = self.loca_default, anchor = tk.N)
-            self.city_n.place(relx = .5, rely = self.loca_default, anchor = tk.N)
+            self.state_n.place(relx = .6, rely = self.loca_default, anchor = tk.N)
+            self.city_n.place(relx = .47, rely = self.loca_default, anchor = tk.N)
             self.submit.place(relx = .5, rely = self.loca_default + .07, anchor = tk.N)
 
         def add_location(city, state):
-            
+            invalid = False
             try:
-                SQLWrapper.create_customer_locations('TestDatabase2.db', (user, city, state, 5))
+                SQLWrapper.create_customer_locations('TestDatabase2.db', (user, city, state))
             
             except:
                 invalid = tk.Label(self, text = 'Invalid Field')
-                invalid.place(relx = .5, rely = self.loca_default + .2)
+                invalid.place(relx = .3, rely = self.loca_default + .2)
                 invalid.after(3000, invalid.destroy)
                 self.loca_default -= .05
+                invalid = True
 
             self.state_n.after(0, self.state_n.destroy)
             self.city_n.after(0, self.city_n.destroy)
@@ -535,8 +536,17 @@ class UpdateUserInfo(tk.Frame):
             self.submit.after(0, self.submit.destroy)
 
             self.loca_default += .05
+            self.new_location = tk.Button(self, text = 'Add New location', command = get_location)
             self.new_location.place(relx = .5, rely = self.loca_default, anchor = tk.N)
 
+            if not invalid:
+                locations = SQLWrapper.get_customer_locations('TestDatabase2.db', user)
+            
+                print(locations)
+                print(locations[-1])
+
+                L = tk.Label(self, text  = locations[-1][0] + ', ' + locations [-1][1], bg = '#6FA8DD')
+                L.place(relx = .5, rely = self.loca_default - .05, anchor = tk.N)
 
 
         # text labels

@@ -411,7 +411,7 @@ class RestaurantUpdateInventory(tk.Frame):
         img = tk.Label(image = self.render, borderwidth = 3, bg = 'black')
 
         # buttons
-        update_info = tk.Button(self, text = 'Update Info', height = 2, width = 13, command = lambda: master.switch_frame(UpdateUserInfo))
+        update_info = tk.Button(self, text = 'Update Info', height = 2, width = 13, command = lambda: master.switch_frame(RestaurantUpdateInfo))
         update_menu = tk.Button(self, text = 'Update Menu', height = 2, width = 13, command = lambda: master.switch_frame(RestaurantUpdateMenu))
         remove_ingredient = tk.Button(self, text = 'remove', height = 1, width = 11)
         # command is save amount
@@ -674,32 +674,129 @@ class Browse(tk.Frame):
         # main frame
         tk.Frame.__init__(self, master)
         self.configure(bg = '#6FA8DD')
+        # search bar and check box frame
+        top_frame = tk.Frame(self, bg = '#6FA8DD', bd = 9, height = 20, width = 70)
+        # frame to hold restaurant lists
+        bottom_frame = tk.Frame(self, bg = '#6FA8DD', bd = 2)
 
         global user_name
+        
+        # should be called by search, given the restaurants needed to print
+        #def print_results():
+
+        # make this func the command for search_button when complete
+        def search(search_var, search_type):
+            #if len(search_var.get()) == 0:
+                # print 'nothing was entered in the search bar'
+            #elif not search_type.get():
+                # print 'please select what you are searching for'
+            #elif search_type.get() == 'loc':
+                # print matching locations
+            if search_type.get() == 'res':
+                # print matching restaurants
+                restaurants = get_restaurant_with_name('ManyMenus.db', search_var)
+                frames = []
+                i = 0
+                for restaurant in restaurants:
+                    # add a frame
+                    frames.append(tk.Frame(bottom_frame, bg = '#6FA8DD', bd = 2))
+                    # first row
+                    res_name = tk.Label(frames[i], text = search_var, bg = '#6FA8DD', font = ('helvetica', 10, 'bold'))
+                    res_name.grid(row = 0, column = 0, sticky = tk.W, pady = 5)
+                    see_more = tk.Button(frames[i], text = 'see more', bg = '#6FA8DD', font = ('helvetica', 11))
+                    see_more.grid(row = 0, column = 1, sticky = tk.E, pady = 5)
+                    like_res = tk.Button(frames[i], text = 'like', bg = '#6FA8DD', font = ('helvetica', 11))
+                    like_res.grid(row = 0, column = 2, sticky = tk.E, pady = 5)
+                    # list the menu items
+                    menus = get_menu('ManyMenus.db', restaurant[0])
+                    for menu in menus:
+                        dishes = get_dishes_for_menu('ManyMenus.db', menu[0])
+                        j = 0
+                        for dish in dishes:
+                            dish_name = tk.Label(frames[i], text = dish[0], bg = '#6FA8DD', font = ('helvetica', 11))
+                            dish_name.grid(row = j, column = 0, columnspan = 2, sticky = tk.W, pady = 5)
+                            price = tk.Label(frames[i], text = "$" + dish[1], bg = '#6FA8DD', font = ('helvetica', 11))
+                            price.grid(row = j, column = 2, pady = 5)
+                            # increment dish placement
+                            j += 1
+                    # increment frame
+                    i += 1
+
+        '''
+        def search_fav_loc():
+            # print restaurants of the favorite location
+            #locations = get_customer_locations('ManyMenus.db', user)
+
+        
+        def search_fav_res():
+            # print favorite restaurants
+        '''
 
         # text labels
-        username_label = tk.Label(self, text = user_name, bg = '#6FA8DD', font = ('helvetica', 11))
+        user_label = tk.Label(self, text = user_name, bg = '#6FA8DD', font = ('helvetica', 11))
         title_label = tk.Label(self, text = 'Browse Menus', bg = '#6FA8DD', font = ('helvetica', 14, 'bold'))
+        ingredient = tk.Label(self, text = 'ingredient 1', bg = '#6FA8DD', font = ('helvetica', 11))
 
-        # button variables
-        loc_var = tk.IntVar()
-        res_var = tk.IntVar()
-        diet_var = tk. IntVar()
+        # text box
+        search_var = tk.StringVar()
+        search_bar = tk.Entry(top_frame, relief = tk.GROOVE, width = 35)
 
         # buttons
-        update_info = tk.Button(self, text = 'Update Info', bg = '#6FA8DD', font = ('helvetica', 11))
-        loc_check = tk.Checkbutton(self, text = 'Filter by favorite locations', variable = loc_var, bg = '#6FA8DD', activebackground = '#6FA8DD')
-        res_check = tk.Checkbutton(self, text = 'Filter by favorite restaurants', variable = res_var, bg = '#6FA8DD', activebackground = '#6FA8DD')
-        diet_check = tk.Checkbutton(self, text = 'Filter by diet', variable = diet_var, bg = '#6FA8DD', activebackground = '#6FA8DD')
-        see_more = tk.Button(self, text = 'see more', bg = '#6FA8DD', font = ('helvetica', 11))
+        search_type = tk.StringVar()
+        #diet_var = tk. IntVar()
+        search_button = tk.Button(top_frame, text = 'Search', bg = '#6FA8DD', font = ('helvetica', 11), command = lambda: search(search_var, search_type))
+        update_info = tk.Button(self, text = 'Update Info', bg = '#6FA8DD', font = ('helvetica', 11), command = lambda: master.switch_frame(UpdateUserInfo))
+        loc_check = tk.Radiobutton(top_frame, text = 'Search locations (City, State)', variable = search_type, value = 'loc', bg = '#6FA8DD', activebackground = '#6FA8DD')
+        res_check = tk.Radiobutton(top_frame, text = 'Search restaurants', variable = search_type, value = 'res', bg = '#6FA8DD', activebackground = '#6FA8DD')
+        browse_fav_loc = tk.Button(top_frame, text = 'Browse favorite locations', bg = '#6FA8DD', activebackground = '#6FA8DD')
+        browse_fav_res = tk.Button(top_frame, text = 'Browse favorite restaurants', bg = '#6FA8DD', activebackground = '#6FA8DD')
+        #diet_check = tk.Checkbutton(top_frame, text = 'Filter by diet', variable = diet_var, bg = '#6FA8DD', activebackground = '#6FA8DD')
+        
         see_less = tk.Button(self, text = 'see less', bg = '#6FA8DD', font = ('helvetica', 11))
-        see_last_searched = tk.Button(self, text = 'see last searched', bg = '#6FA8DD', font = ('helvetica', 11))
-
+        #see_last_searched = tk.Button(top_frame, text = 'see last searched', bg = '#6FA8DD', font = ('helvetica', 8))
+        
 
         # Many Menus Logo
         load = Image.open(resource_path('many_menus.png')).resize((163, 106), Image.ANTIALIAS)
         self.render = ImageTk.PhotoImage(load)
         img = tk.Label(image = self.render, borderwidth = 3, bg = 'black')
+
+        # place image, headers, and switch screen buttons at top
+        img.place(relx = .05, rely = .02)
+        user_label.place(relx = .5, rely = .08, anchor = tk.N)
+        title_label.place(relx = .5, rely = .2, anchor = tk.N)
+        update_info.place(relx = .8, rely = .05, anchor = tk.N)
+
+        # place top frame
+        # place search bar
+        search_bar.grid(row = 0, column = 0, padx = 10)
+        search_button.grid(row = 0, column = 1, pady = 10)
+        # place check buttons and last searched button
+        loc_check.grid(row = 1, column = 0, sticky = tk.W, pady = 5)
+        res_check.grid(row = 2, column = 0, sticky = tk.W, pady = 5)
+        #diet_check.grid(row = 3, column = 0, sticky = tk.W)
+        #see_last_searched.grid(row = 0, column = 2, sticky = tk.E)
+        browse_fav_loc.grid(row = 1, column = 1)
+        browse_fav_res.grid(row = 2, column = 1)
+        top_frame.place(relx = .4, rely = .3, anchor = tk.N)
+
+        '''
+        # place bottom frame
+        # place list of restaurants and their dishes
+        res_name.place(relx = .2, rely = .55, anchor = tk.N)
+        see_more.place(relx = .55, rely = .55, anchor = tk.N)
+        like_res.place(relx = .8, rely = .55, anchor = tk.N)
+        dish.place(relx = .25, rely = .6, anchor = tk.N)
+        price.place(relx = .8, rely = .6, anchor = tk.N)
+        
+        res_name.place(relx = .2, rely = .55, anchor = tk.N)
+        see_less.place(relx = .55, rely = .55, anchor = tk.N)
+        like_res.place(relx = .8, rely = .55, anchor = tk.N)
+        dish.place(relx = .25, rely = .6, anchor = tk.N)
+        price.place(relx = .8, rely = .6, anchor = tk.N)
+
+        bottom_frame.place(relx = .4, rely = .6, anchor = tk.N)
+        '''
 
         return
 

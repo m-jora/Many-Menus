@@ -164,6 +164,7 @@ def initialize_database(database_file):
                 DishID TEXT,
                 DishName TEXT,
                 MenuID TEXT,
+                Price TEXT,
                 FOREIGN KEY(MenuID) REFERENCES MenuID(Menu)
         )""")
 
@@ -310,7 +311,7 @@ def create_inventory(database_file, inventory_data):
 def create_dish(database_file, dish_data):
     conn = sqlite3.connect(database_file)
 
-    sqlCommand = '''INSERT INTO Dish(DishID, DishName, MenuID) VALUES (?,?,?)'''
+    sqlCommand = '''INSERT INTO Dish(DishID, DishName, MenuID, Price) VALUES (?,?,?)'''
 
     cur = conn.cursor()
     cur.execute(sqlCommand, dish_data)
@@ -534,6 +535,17 @@ def get_diet_for_user(database_file, customer_username):
 
     return(diet_info)
 
+# Purpose: Gets all the information for a restaurant that matches a given store name
+def get_restaurants_with_name(datbase_file, StoreName):
+    conn = sqlite3.connect(datbase_file) 
+
+    curr = conn.cursor()
+    curr.execute("SELECT Username, City, State, StreetAddress FROM Restaurant WHERE StoreName=?", (StoreName,))
+
+    restaurantsWithName = curr.fetchall()
+
+    return restaurantsWithName
+
 # Purpose: Gets all the information for a restaurant with a given username
 def get_restaurant_info(database_file, restaurant_username):
     conn = sqlite3.connect(database_file)
@@ -626,7 +638,7 @@ def get_dishes_for_menu(database_file, menuID):
     conn = sqlite3.connect(database_file)
 
     curr = conn.cursor()
-    curr.execute("SELECT DishName FROM Dish WHERE MenuID=?", (menuID,))
+    curr.execute("SELECT DishName, Price FROM Dish WHERE MenuID=?", (menuID,))
 
     dishes = curr.fetchall()
 

@@ -34,9 +34,10 @@ def initialize_database(database_file):
                 City TEXT NOT NULL,
                 StreetAddress TEXT NOT NULL,
                 Password TEXT NOT NULL ,
-                Username TEXT PRIMARY KEY,
+                Username TEXT UNIQUE,
                 StoreName TEXT NOT NULL,
                 PhoneNumber TEXT NOT NULL,
+                RestaurantID INTEGER PRIMARY KEY AUTOINCREMENT,
                 CHECK(length(Username) >= 6),
                 CHECK(length(Password) >= 8),
                 CHECK(length(StoreName) >= 4),
@@ -53,9 +54,10 @@ def initialize_database(database_file):
 
         create_table(database, """
             CREATE TABLE IF NOT EXISTS Menu(
-                MenuID TEXT PRIMARY KEY,
+                MenuID INTEGER,
                 RestaurantUsername TEXT,
-                FOREIGN KEY(RestaurantUsername) REFERENCES Username(Restaurant)
+                FOREIGN KEY(RestaurantUsername) REFERENCES Username(Restaurant),
+                FOREIGN KEY(MenuID) REFERENCES RestaurantID(Restaurant)
             )""")
 
         create_table(database, """
@@ -147,7 +149,8 @@ def initialize_database(database_file):
             CREATE TABLE IF NOT EXISTS Inventory(
                 InventoryID TEXT PRIMARY KEY,
                 RestaurantUsername TEXT,
-                FOREIGN KEY(RestaurantUsername) REFERENCES RestaurantUsername(Restaurant)
+                FOREIGN KEY(RestaurantUsername) REFERENCES RestaurantUsername(Restaurant),
+                FOREIGN KEY(InventoryID) REFERENCES RestaurantID(Restaurant)
         )""")
 
         create_table(database, """
@@ -191,6 +194,19 @@ def create_restaurant(database_file, restaurant_data):
     cur.execute(sqlCommand, restaurant_data)
     conn.commit()
 
+    menuTuple = (restaurant_data[4], get_restaurant_id("ManyMenus.db", restaurant_data[4]))
+    sqlCommand2 = '''INSERT INTO Menu(MenuID, RestaurantUsername) VALUES (?,?)'''
+
+    cur.execute(sqlCommand2, menuTuple)
+    conn.commit()
+
+    inventoryTuple = (restaurant_data[4], get_restaurant_id("ManyMenus.db", restaurant_data[4]))
+    sqlCommand3 = '''INSERT INTO Inventory(InventoryID, RestaurantUsername) VALUES (?,?)'''
+
+    cur.execute(sqlCommand3, inventoryTuple)
+    conn.commit()
+
+
 def create_menu_update(database_file, menu_update_data):
     conn = sqlite3.connect(database_file)
 
@@ -200,14 +216,6 @@ def create_menu_update(database_file, menu_update_data):
     cur.execute(sqlCommand, menu_update_data)
     conn.commit()
 
-def create_menu(database_file, menu_data):
-    conn = sqlite3.connect(database_file)
-
-    sqlCommand = '''INSERT INTO Menu(MenuID,RestaurantUsername) VALUES (?,?)'''
-
-    cur = conn.cursor()
-    cur.execute(sqlCommand, menu_data)
-    conn.commit()
 
 def create_browse(database_file, browse_data):
     conn = sqlite3.connect(database_file)
@@ -465,7 +473,6 @@ def get_password_for_user(database_file, customer_username):
     else:
         return(password[0])
 
-
 # Purpose: Gets the basic info about a user
 def get_customer_info(database_file, customer_username):
     conn = sqlite3.connect(database_file)
@@ -653,5 +660,15 @@ def get_dishes_for_menu(database_file, menuID):
     dishes = curr.fetchall()
 
     return dishes
+
+def get_restaurant_id(database_file, username):
+    conn = sqlite3.connect(database_file)
+
+    curr = conn.cursor()
+    curr.execute("SELECT RestaurantID FROM Restaurant WHERE Username=?", (username,))
+
+    restaurantID = curr.fetchone()
+
+    return restaurantID[0]
 
 initialize_database("ManyMenus.db")

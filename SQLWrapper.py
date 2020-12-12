@@ -101,7 +101,7 @@ def initialize_database(database_file):
         create_table(database, """
             CREATE TABLE IF NOT EXISTS AdhereTo(
                 DietName TEXT,
-                FoodID TEXT,
+                FoodID INTEGER,
                 PRIMARY KEY(DietName, FoodID),
                 FOREIGN KEY(DietName) REFERENCES DietName(Diet),
                 FOREIGN KEY(FoodID) REFERENCES ID(Food)
@@ -116,7 +116,7 @@ def initialize_database(database_file):
 
         create_table(database, """
             CREATE TABLE IF NOT EXISTS Food(
-                FoodID TEXT PRIMARY KEY,
+                FoodID INTEGER PRIMARY KEY AUTOINCREMENT,
                 CaloriesPerServing INTEGER,
                 MenuID TEXT,
                 InventoryID TEXT,
@@ -266,7 +266,7 @@ def create_diet_restricted_type(database_file, restricted_type_data):
 def create_food(database_file, food_data):
     conn = sqlite3.connect(database_file)
 
-    sqlCommand = '''INSERT INTO Food(FoodID,CaloriesPerServing,MenuID,InventoryID,Name,Price,QuantityInStock,InStock) VALUES (?,?,?,?,?,?,?,?)'''
+    sqlCommand = '''INSERT INTO Food(CaloriesPerServing,MenuID,InventoryID,Name,Price,QuantityInStock,InStock) VALUES (?,?,?,?,?,?,?)'''
 
     cur = conn.cursor()
     cur.execute(sqlCommand, food_data)
@@ -590,12 +590,22 @@ def get_food_on_menu(database_file, menuID):
 
     return(food_on_menu)
 
+def get_restaurant_inventory_id(database_file, username):
+    conn = sqlite3.connect(database_file)
+
+    curr = conn.cursor()
+    curr.execute("SELECT InventoryID FROM Inventory WHERE RestaurantUsername=?",(username,))
+
+    restaurant_inventory_id = curr.fetchone()
+
+    return restaurant_inventory_id
+
 # Purpose: Gets all the food listed in an inventory with the given ID
 def get_food_in_inventory(database_file, inventoryID):
     conn = sqlite3.connect(database_file)
 
     curr = conn.cursor()
-    curr.execute("SELECT Name,QuantityInStock FROM Food WHERE inventoryID=?", (inventoryID,))
+    curr.execute("SELECT FoodID,Name,QuantityInStock FROM Food WHERE inventoryID=?", (inventoryID,))
 
     food_in_inventory = curr.fetchall()
 

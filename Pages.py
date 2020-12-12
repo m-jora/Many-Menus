@@ -387,21 +387,78 @@ class RestaurantUpdateInventory(tk.Frame):
         self.configure(bg = '#6FA8DD')
 
         global res_name
-        user = res_name
 
-        #def save_amount():
+        ing_frame = tk.Frame(self, bg = '#6FA8DD', bd = 2)
+        inventory_id = SQLWrapper.get_restaurant_inventory_id('ManyMenus.db', res_name)
+
+        #def save_amount(i):
+
+        def remove(i, frame):
+            SQLWrapper.delete_food('ManyMenus.db', i)
+            list_ingredients(frame)
+
+        def add_ingredient(i, frame, calories, inventory_id, name, quantity):
+            invalid = False
+            try:
+                SQLWrapper.create_food('ManyMenus.db', (calories, '0', inventory_id, name, '0', quantity, True))
+            except:
+                invalid = tk.Label(ing_frame, text = 'Invalid Field')
+                invalid.grid(row = 6+i, column = 0)
+                invalid.after(3000, invalid.destroy)
+                invalid = True
+            if not invalid:
+                list_ingredients(frame)
         
-        #def remove():
+        def get_ingredient(i, frame, add_ing_b, inventory_id):
+            # destroy add new ingredient button
+            add_ing_b.grid_forget()
+            # create entry boxes and labels
+            name_label = tk.Label(frame, text = "Ingredient name:", bg = '#6FA8DD', font = ('helvetica', 8))
+            name_label.grid(row = 3+i, column = 0)
+            name_entry = tk.Entry(frame, relief = tk.GROOVE, width = 35)
+            name_entry.grid(row = 3+i, column = 1)
+            calories_label = tk.Label(frame, text = "Calories per serving:", bg = '#6FA8DD', font = ('helvetica', 8))
+            calories_label.grid(row = 4+i, column = 0)
+            calories_entry = tk.Entry(frame, relief = tk.GROOVE, width = 35)
+            calories_entry.grid(row = 4+i, column = 1)
+            quantity_label = tk.Label(frame, text = "Quantity:", bg = '#6FA8DD', font = ('helvetica', 8))
+            quantity_label.grid(row = 5+i, column = 0)
+            quantity_entry = tk.Entry(frame, relief = tk.GROOVE, width = 35)
+            quantity_entry.grid(row = 5+i, column = 1)
+            submit_ing = tk.Button(frame, text = 'Finish adding', height = 2, width = 13, command = lambda: add_ingredient(i, frame, calories_entry.get(), inventory_id, name_entry.get(), quantity_entry.get()))
+            submit_ing.grid(row = 6+i, column = 0)
         
-        #def add_new_ingredient():
+        def list_ingredients(frame):
+            # forget everything in the frame
+            frame.destroy()
+            ing_frame = tk.Frame(self, bg = '#6FA8DD', bd = 2)
+            # get the ingredients and place them
+            ingredients = SQLWrapper.get_food_in_inventory('ManyMenus.db', inventory_id)
+            i = 0
+            for ing in ingredients:
+                ingredient_name_label = tk.Label(ing_frame, text = ing[1], bg = '#6FA8DD', font = ('helvetica', 11, 'bold'))
+                ingredient_name_label.grid(row = 0+i, column = 0)
+
+                amount_label = tk.Label(ing_frame, text = 'Amount:', bg = '#6FA8DD', font = ('helvetica', 11))
+                amount_label.grid(row = 1+i, column = 0)
+
+                ing_amount_label = tk.Label(ing_frame, text = ing[2], bg = '#6FA8DD', font = ('helvetica', 11))
+                ing_amount_label.grid(row = 1+i, column = 1)
+                
+                #save_amount = tk.Button(ing_frame, text = 'save amount', height = 1, width = 11)
+                #save_amount.grid(row = 0+i, column = 0)
+
+                i += 1
+            add_ing = tk.Button(ing_frame, text = 'Add new ingredient', height = 1, width = 15, command = lambda: get_ingredient(i, ing_frame, add_ing, inventory_id))
+            add_ing.grid(row = 2+i, column = 0)
+            #remove_ing = tk.Button(ing_frame, text = 'Remove', height = 1, width = 11))
+            #remove_ing.grid(row = 0+i, column = 1)
+            ing_frame.place(relx = .3, rely = .3, anchor = tk.N)
         
         # text labels
         res_name_label = tk.Label(self, text = res_name, bg = '#6FA8DD', font = ('helvetica', 11))
         title_label = tk.Label(self, text = 'Update Inventory', bg = '#6FA8DD', font = ('helvetica', 14, 'bold'))
-        amount_label = tk.Label(self, text = 'Amount: ', bg = '#6FA8DD', font = ('helvetica', 11))
-        ingredient_name_label = tk.Label(self, text = 'ingre 1', bg = '#6FA8DD', font = ('helvetica', 11, 'bold'))
-        ingredient_amount_label = tk.Label(self, text = '1 oz', bg = '#6FA8DD', font = ('helvetica', 11))
-
+        
         # text box
         enter_amount = tk.Entry(self, relief = tk.GROOVE, width = 35)
 
@@ -413,12 +470,9 @@ class RestaurantUpdateInventory(tk.Frame):
         # buttons
         update_info = tk.Button(self, text = 'Update Info', height = 2, width = 13, command = lambda: master.switch_frame(RestaurantUpdateInfo))
         update_menu = tk.Button(self, text = 'Update Menu', height = 2, width = 13, command = lambda: master.switch_frame(RestaurantUpdateMenu))
-        remove_ingredient = tk.Button(self, text = 'remove', height = 1, width = 11)
-        # command is save amount
-        save_amount = tk.Button(self, text = 'save amount', height = 1, width = 11) 
-        # opens text box to type in new amount
+        
         update_amount = tk.Button(self, text = 'update amount', height = 1, width = 12) 
-        add_new_ingredient = tk.Button(self, text = 'Add new ingredient', height = 1, width = 15)
+        
 
         # display image, restaurant name, title, change page buttons
         img.place(relx = .05, rely = .02)
@@ -428,12 +482,8 @@ class RestaurantUpdateInventory(tk.Frame):
         update_menu.place(relx = .8, rely = .1, anchor = tk.N)
 
         # display table (ingredient name, remove, amount label, amount, update amount button)
-        ingredient_name_label.place(relx = .3, rely = .4, anchor = tk.N)
-        remove_ingredient.place(relx = .6, rely = .4, anchor = tk.N)
-        amount_label.place(relx = .3, rely = .5, anchor = tk.N)
-        ingredient_amount_label.place(relx = .4, rely = .5, anchor = tk.N)
-        save_amount.place(relx = .6, rely = .5, anchor = tk.N)
-        add_new_ingredient.place(relx = .3, rely = .6, anchor = tk.N)
+        ing_frame.place(relx = .3, rely = .3, anchor = tk.N)
+        list_ingredients(ing_frame)
 
         return
 
@@ -444,26 +494,16 @@ class RestaurantUpdateMenu(tk.Frame):
         self.configure(bg = '#6FA8DD')
 
         global res_name
-        user = res_name
+
+        menu_frame = tk.Frame(self, bg = '#6FA8DD', bd = 2)
 
         # text labels
         res_name_label = tk.Label(self, text = res_name, bg = '#6FA8DD', font = ('helvetica', 11))
         title_label = tk.Label(self, text = 'Update Menu', bg = '#6FA8DD', font = ('helvetica', 14, 'bold'))
-        dish_name_label = tk.Label(self, text = 'dish 1', bg = '#6FA8DD', font = ('helvetica', 11))
-        price_label = tk.Label(self, text = '$' + '11.11', bg = '#6FA8DD', font = ('helvetica', 11))
-        ingredient_name_label = tk.Label(self, text = 'ingredient 1', bg = '#6FA8DD', font = ('helvetica', 11))
-        ingredient_amount_label = tk.Label(self, text = '1 oz', bg = '#6FA8DD', font = ('helvetica', 11))
-
+        
         # buttons
         update_info = tk.Button(self, text = 'Update Info', height = 2, width = 13, command = lambda: master.switch_frame(RestaurantUpdateInfo))
         update_inv = tk.Button(self, text = 'Update Inventory', height = 2, width = 13, command = lambda: master.switch_frame(RestaurantUpdateInventory))
-        # command to save changes
-        save = tk.Button(self, text = 'save', height = 1, width = 8)
-        # command to open text boxes
-        update = tk.Button(self, text = 'update', height = 1, width = 8)
-        remove = tk.Button(self, text = 'remove', height = 1, width = 8)
-        add_ingredient = tk.Button(self, text = 'add ingredient', height = 1, width = 14)
-        add_dish = tk.Button(self, text = 'add new dish', height = 1, width = 14)
 
         # Many Menus Logo
         load = Image.open(resource_path('many_menus.png')).resize((163, 106), Image.ANTIALIAS)
@@ -478,14 +518,41 @@ class RestaurantUpdateMenu(tk.Frame):
         update_inv.place(relx = .8, rely = .1, anchor = tk.N)
 
         # display table (dish name, price, update. ingredient name, amount, remove. add ingredient. add new dish)
-        dish_name_label.place(relx = .3, rely = .3, anchor = tk.N)
-        price_label.place(relx = .4, rely = .3, anchor = tk.N)
-        update.place(relx = .6, rely = .3, anchor = tk.N)
-        ingredient_name_label.place(relx = .3, rely = .4, anchor = tk.N)
-        ingredient_amount_label.place(relx = .4, rely = .4, anchor = tk.N)
-        remove.place(relx = .5, rely = .4, anchor = tk.N)
-        add_ingredient.place(relx = .3, rely = .5, anchor = tk.N)
-        add_dish.place(relx = .3, rely = .6, anchor = tk.N)
+        menus = SQLWrapper.get_menu('ManyMenus.db', res_name)
+        remove_dish = []
+        remove_ingredient = []
+        i = 0
+        for menu in menus:
+            dishes = SQLWrapper.get_dishes_for_menu('ManyMenus.db', menu[0])
+            
+            for dish in dishes:
+                dish_name_label = tk.Label(menu_frame, text = dish[0], bg = '#6FA8DD', font = ('helvetica', 11))
+                dish_name_label.grid(row = 0+i, column = 0)
+                
+                price_label = tk.Label(menu_frame, text = '$' + dish[1], bg = '#6FA8DD', font = ('helvetica', 11))
+                price_label.grid(row = 0+i, column = 1)
+                
+                remove_dish.append(tk.Button(menu_frame, text = 'Remove dish', height = 1, width = 8, font = ('helvetica', 8)))
+                remove_dish[i].grid(row = 0+i, column = 2)
+                
+                ingredient_name_label = tk.Label(menu_frame, text = 'ingredient 1', bg = '#6FA8DD', font = ('helvetica', 8))
+                ingredient_name_label.grid(row = 1+i, column = 0)
+
+                ingredient_amount_label = tk.Label(menu_frame, text = '1 oz', bg = '#6FA8DD', font = ('helvetica', 8))
+                ingredient_amount_label.grid(row = 1+i, column = 1)
+                
+                remove_ingredient.append(tk.Button(menu_frame, text = 'Remove', height = 1, width = 8, font = ('helvetica', 8)))
+                remove_ingredient[i].grid(row = 1+i, column = 2)
+                
+                add_ingredient = tk.Button(menu_frame, text = 'Add ingredient', height = 1, width = 14)
+                add_ingredient.grid(row = 2+i, column = 0, columnspan = 3)
+                
+                i += 1
+
+        add_dish = tk.Button(menu_frame, text = 'Add new dish', height = 1, width = 14)
+        add_dish.grid(row = 3+i, column = 1)
+
+        menu_frame.place(relx = .3, rely = .3, anchor = tk.N)
 
         return
 
@@ -694,7 +761,7 @@ class Browse(tk.Frame):
                 # print matching locations
             if search_type.get() == 'res':
                 # print matching restaurants
-                restaurants = get_restaurant_with_name('ManyMenus.db', search_var)
+                restaurants = SQLWrapper.get_restaurants_with_name('ManyMenus.db', search_var)
                 frames = []
                 i = 0
                 for restaurant in restaurants:
@@ -708,9 +775,9 @@ class Browse(tk.Frame):
                     like_res = tk.Button(frames[i], text = 'like', bg = '#6FA8DD', font = ('helvetica', 11))
                     like_res.grid(row = 0, column = 2, sticky = tk.E, pady = 5)
                     # list the menu items
-                    menus = get_menu('ManyMenus.db', restaurant[0])
+                    menus = SQLWrapper.get_menu('ManyMenus.db', restaurant[0])
                     for menu in menus:
-                        dishes = get_dishes_for_menu('ManyMenus.db', menu[0])
+                        dishes = SQLWrapper.get_dishes_for_menu('ManyMenus.db', menu[0])
                         j = 0
                         for dish in dishes:
                             dish_name = tk.Label(frames[i], text = dish[0], bg = '#6FA8DD', font = ('helvetica', 11))

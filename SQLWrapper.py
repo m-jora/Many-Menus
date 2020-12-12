@@ -612,7 +612,7 @@ def get_food_in_inventory(database_file, inventoryID):
     conn = sqlite3.connect(database_file)
 
     curr = conn.cursor()
-    curr.execute("SELECT FoodID,Name,QuantityInStock FROM Food WHERE inventoryID=?", (inventoryID,))
+    curr.execute("SELECT FoodID,Name,QuantityInStock,CaloriesPerServing FROM Food WHERE inventoryID=?", (inventoryID,))
 
     food_in_inventory = curr.fetchall()
 

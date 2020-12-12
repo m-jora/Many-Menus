@@ -164,7 +164,7 @@ def initialize_database(database_file):
 
         create_table(database, """
             CREATE TABLE IF NOT EXISTS Dish(
-                DishID TEXT,
+                DishID INTEGER PRIMARY KEY AUTOINCREMENT,
                 DishName TEXT,
                 MenuID TEXT,
                 Price TEXT,
@@ -176,6 +176,8 @@ def initialize_database(database_file):
             CREATE TABLE IF NOT EXISTS DishFoods(
                 DishID TEXT,
                 FoodName TEXT,
+                quantityInDish INTEGER,
+                calories INTEGER,
                 FOREIGN KEY(DishID) REFERENCES DishID(Restaurant),
                 FOREIGN KEY(FoodName) REFERENCES Name(Food)
             )""")
@@ -319,7 +321,7 @@ def create_inventory(database_file, inventory_data):
 def create_dish(database_file, dish_data):
     conn = sqlite3.connect(database_file)
 
-    sqlCommand = '''INSERT INTO Dish(DishID, DishName, MenuID, Price) VALUES (?,?,?)'''
+    sqlCommand = '''INSERT INTO Dish(DishName, MenuID, Price) VALUES (?,?,?)'''
 
     cur = conn.cursor()
     cur.execute(sqlCommand, dish_data)
@@ -328,7 +330,8 @@ def create_dish(database_file, dish_data):
 def create_dish_foods(database_file, dish_food_data):
     conn = sqlite3.connect(database_file)
 
-    sqlCommand = '''INSERT INTO DishFoods(DishID, FoodName) VALUES (?,?)'''
+
+    sqlCommand = '''INSERT INTO DishFoods(DishID, FoodName, quantityInDish, calories) VALUES (?,?,?,?)'''
 
     cur = conn.cursor()
     cur.execute(sqlCommand, dish_food_data)
@@ -345,13 +348,13 @@ def create_dish_foods(database_file, dish_food_data):
 ###################################################################
 
 # @param FoodID: FoodID is the PK of the Food table
-def delete_food(database_file, FoodID):
+def delete_food(database_file, foodName, menuID):
     conn = sqlite3.connect(database_file)
 
-    sqlCommand = '''DELETE FROM Food WHERE FoodID = ?'''
+    sqlCommand = '''DELETE FROM Food WHERE Name = ?  AND MenuID = ?'''
     curr = conn.cursor()
 
-    curr.execute(sqlCommand, (FoodID,))
+    curr.execute(sqlCommand, (foodName, menuID))
     conn.commit()
 
 # @param DietName: Dietname is the PK of the Diet table
@@ -645,8 +648,8 @@ def get_food_for_dish(database_file, dishID):
     conn = sqlite3.connect(database_file)
 
     curr = conn.cursor()
-    curr.execute("SELECT FoodName FROM DishFoods WHERE dishID=?", (dishID,))
-    
+    curr.execute("SELECT FoodName, calories, quantityInDish FROM DishFoods WHERE dishID=?", (dishID,))
+
     foods = curr.fetchall()
 
     return foods
@@ -670,5 +673,15 @@ def get_restaurant_id(database_file, username):
     restaurantID = curr.fetchone()
 
     return restaurantID[0]
+
+def get_dish_id(database_file, menu_id, dish_name):
+    conn = sqlite3.connect(database_file)
+
+    curr = conn.cursor()
+    curr.execute("SELECT DishID FROM Dish WHERE MenuID = ? AND DishName = ?", (menu_id, dish_name))
+
+    dishID = curr.fetchone()
+
+    return dishID[0]
 
 initialize_database("ManyMenus.db")

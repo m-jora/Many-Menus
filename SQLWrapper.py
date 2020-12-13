@@ -695,6 +695,32 @@ def get_dish_id(database_file, menu_id, dish_name):
 
     return dishID[0]
 
+# Given a city and state it returns the number of restaurants in that area
+def get_number_of_restaurants_in_area(database_file, state, city):
+    listOfRestaurantsWithLocation = get_restaurants_with_location(database_file, state, city)
+
+    return len(listOfRestaurantsWithLocation)
+
+def get_number_of_restaurants_with_name(database_file, storeName):
+    listOfRestaurantsWithName = get_restaurants_with_name("ManyMenus.db", storeName)
+
+    return len(listOfRestaurantsWithName)
+
+# Purpose: Gets the total number of users on our system
+def get_number_of_users(database_file):
+    conn = sqlite3.connect(database_file)
+
+    curr = conn.cursor()
+    curr.execute("SELECT COUNT(*) FROM Restaurant")
+
+    numOfRestaurantUsers = curr.fetchone()[0]
+
+    curr2 = conn.cursor()
+    curr2.execute("SELECT COUNT(*) FROM Customer")
+
+    numOfCustomers = curr2.fetchone()[0]
+
+    return (numOfRestaurantUsers + numOfCustomers)
 
 
 initialize_database("ManyMenus.db")

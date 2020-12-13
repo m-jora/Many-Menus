@@ -550,11 +550,21 @@ def get_restaurants_with_name(datbase_file, StoreName):
     conn = sqlite3.connect(datbase_file) 
 
     curr = conn.cursor()
-    curr.execute("SELECT Username, City, State, StreetAddress FROM Restaurant WHERE StoreName=?", (StoreName,))
+    curr.execute("SELECT StoreName, Username, City, State, StreetAddress FROM Restaurant WHERE StoreName=?", (StoreName,))
 
     restaurantsWithName = curr.fetchall()
 
     return restaurantsWithName
+
+def get_restaurants_with_location(database_file, state, city):
+    conn = sqlite3.connect(database_file)
+
+    curr = conn.cursor()
+    curr.execute("SELECT StoreName, Username, City, State, StreetAddress FROM Restaurant WHERE State = ? AND City = ?", (state,city))
+
+    restaurantsWithLocation = curr.fetchall()
+
+    return restaurantsWithLocation
 
 # Purpose: Gets all the information for a restaurant with a given username
 def get_restaurant_info(database_file, restaurant_username):
@@ -683,5 +693,7 @@ def get_dish_id(database_file, menu_id, dish_name):
     dishID = curr.fetchone()
 
     return dishID[0]
+
+
 
 initialize_database("ManyMenus.db")

@@ -881,23 +881,25 @@ class Browse(tk.Frame):
         # search bar and check box frame
         top_frame = tk.Frame(self, bg = '#6FA8DD', bd = 9, height = 20, width = 70)
         # frame to hold restaurant lists
-        bottom_frame = tk.Frame(self, bg = '#6FA8DD', bd = 2)
+        self.bottom_frame = tk.Frame(self, bg = '#6FA8DD', bd = 2)
+        inner_frames = []
 
         global user_name
 
         # make this func the command for search_button when complete
-        def search_res(top, bottom, name_var):
+        def search_res(top, inner_frames, name_var):
             if len(name_var) == 0:
                 # print 'nothing was entered in the search bar'
-                invalid = tk.Label(top, text = 'Nothing entered')
+                invalid = tk.Label(top, text = 'Enter a restaurant name')
                 invalid.grid(row = 2, column = 0, columnspan = 5)
                 invalid.after(3000, invalid.destroy)
             else:
                 # print matching restaurants
                 restaurants = SQLWrapper.get_restaurants_with_name('ManyMenus.db', name_var)
-                list_results(bottom, restaurants)
+                num_results = SQLWrapper.get_number_of_restaurants_with_name('ManyMenus.db', name_var)
+                list_results(inner_frames, restaurants, num_results)
         
-        def search_loc(top, bottom, city_var, state_var):
+        def search_loc(top, inner_frames, city_var, state_var):
             if len(city_var) == 0:
                 # print 'nothing was entered in the search bar'
                 invalid = tk.Label(top, text = 'Enter a city')
@@ -911,16 +913,19 @@ class Browse(tk.Frame):
             else:
                 # print matching restaurants
                 restaurants = SQLWrapper.get_restaurants_with_location('ManyMenus.db', state_var, city_var)
-                list_results(bottom, restaurants)
+                num_results = SQLWrapper.get_number_of_restaurants_in_area('ManyMenus.db', state_var, city_var)
+                list_results(inner_frames, restaurants, num_results)
         
-        def list_results(frame, restaurants):
-            frame.destroy()
-            bottom_frame = tk.Frame(self, bg = '#6FA8DD', bd = 2)
+        def list_results(inner_frames, restaurants, num_results):
+            for inner in inner_frames:
+                inner.grid_forget()
+            self.bottom_frame.destroy()
+            self.bottom_frame = tk.Frame(self, bg = '#6FA8DD', bd = 2)
             frames = []
             i = 0
             for restaurant in restaurants:
                 # add a frame
-                frames.append(tk.Frame(bottom_frame, bg = '#6FA8DD', bd = 2))
+                frames.append(tk.Frame(self.bottom_frame, bg = '#6FA8DD', bd = 2))
                 # first row
                 res_name = tk.Label(frames[i], text = restaurant[0], bg = '#6FA8DD', font = ('helvetica', 11, 'bold'))
                 res_name.grid(row = 0, column = 0, columnspan = 2, pady = 3)
@@ -945,8 +950,15 @@ class Browse(tk.Frame):
                 frames[i].grid(row = i, column = 0)
                 # increment frame
                 i += 1
+            frames.append(tk.Frame(self.bottom_frame, bg = '#6FA8DD', bd = 2))
+            if num_results != None:
+                num_results_label = tk.Label(frames[i], text = 'Number of results:', bg = '#6FA8DD', font = ('helvetica', 8, 'italic'))
+                num_results_label.grid(row = 0, column = 0, sticky = tk.E, pady = 10)
+                num_label = tk.Label(frames[i], text = num_results, bg = '#6FA8DD', font = ('helvetica', 8, 'italic'))
+                num_label.grid(row = 0, column = 1, sticky = tk.W, pady = 10)
+            frames[i].grid(row = i, column = 0)
             # place bottom frame
-            bottom_frame.place(relx = .5, rely = .5, anchor = tk.N)
+            self.bottom_frame.place(relx = .5, rely = .5, anchor = tk.N)
 
         '''
         def search_fav_loc(frame, user_name):
@@ -982,8 +994,8 @@ class Browse(tk.Frame):
 
         # buttons
         update_info = tk.Button(self, text = 'Update Info', font = ('helvetica', 11), command = lambda: master.switch_frame(UpdateUserInfo))
-        search_res_button = tk.Button(top_frame, text = 'Search by name', height = 1, font = ('helvetica', 10), command = lambda: search_res(top_frame, bottom_frame, search_bar.get()))
-        search_loc_button = tk.Button(top_frame, text = 'Search by city', height = 1, font = ('helvetica', 10), command = lambda: search_loc(top_frame, bottom_frame, city_bar.get(), state_bar.get()))
+        search_res_button = tk.Button(top_frame, text = 'Search by name', height = 1, font = ('helvetica', 10), command = lambda: search_res(top_frame, inner_frames, search_bar.get()))
+        search_loc_button = tk.Button(top_frame, text = 'Search by city', height = 1, font = ('helvetica', 10), command = lambda: search_loc(top_frame, inner_frames, city_bar.get(), state_bar.get()))
         #browse_fav_loc = tk.Button(top_frame, text = 'Browse favorite locations', activebackground = '#6FA8DD', command = lambda: search_fav_loc(bottom_frame, user_name))
         
         #see_less = tk.Button(self, text = 'see less', font = ('helvetica', 11))
@@ -1014,6 +1026,8 @@ class Browse(tk.Frame):
         #browse_fav_loc.grid(row = 2, column = 0, columnspan = 5, pady = 2)
         #browse_fav_res.grid(row = 2, column = 1)
         top_frame.place(relx = .5, rely = .3, anchor = tk.N)
+        list_results(inner_frames, [], None)
+        #bottom_frame.place(relx = .5, rely = .5, anchor = tk.N)
 
         return
 

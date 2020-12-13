@@ -873,47 +873,78 @@ class Browse(tk.Frame):
         bottom_frame = tk.Frame(self, bg = '#6FA8DD', bd = 2)
 
         global user_name
+
         
         # should be called by search, given the restaurants needed to print
         #def print_results():
 
         # make this func the command for search_button when complete
-        def search(search_var, search_type):
-            #if len(search_var.get()) == 0:
+        def search_res(i, frame, name_var):
+            invalid = False
+            if len(name_var) == 0:
                 # print 'nothing was entered in the search bar'
-            #elif not search_type.get():
-                # print 'please select what you are searching for'
-            #elif search_type.get() == 'loc':
-                # print matching locations
-            if search_type.get() == 'res':
+                invalid = tk.Label(frame, text = 'Nothing entered')
+                invalid.grid(row = 1+i, column = 0, columnspan = 2)
+                invalid.after(3000, invalid.destroy)
+                invalid = True
+            else:
                 # print matching restaurants
-                restaurants = SQLWrapper.get_restaurants_with_name('ManyMenus.db', search_var)
-                frames = []
-                i = 0
-                for restaurant in restaurants:
-                    # add a frame
-                    frames.append(tk.Frame(bottom_frame, bg = '#6FA8DD', bd = 2))
-                    # first row
-                    res_name = tk.Label(frames[i], text = search_var, bg = '#6FA8DD', font = ('helvetica', 10, 'bold'))
-                    res_name.grid(row = 0, column = 0, sticky = tk.W, pady = 5)
-                    see_more = tk.Button(frames[i], text = 'see more', bg = '#6FA8DD', font = ('helvetica', 11))
-                    see_more.grid(row = 0, column = 1, sticky = tk.E, pady = 5)
-                    like_res = tk.Button(frames[i], text = 'like', bg = '#6FA8DD', font = ('helvetica', 11))
-                    like_res.grid(row = 0, column = 2, sticky = tk.E, pady = 5)
-                    # list the menu items
-                    menus = SQLWrapper.get_menu('ManyMenus.db', restaurant[0])
-                    for menu in menus:
-                        dishes = SQLWrapper.get_dishes_for_menu('ManyMenus.db', menu[0])
-                        j = 0
-                        for dish in dishes:
-                            dish_name = tk.Label(frames[i], text = dish[0], bg = '#6FA8DD', font = ('helvetica', 11))
-                            dish_name.grid(row = j, column = 0, columnspan = 2, sticky = tk.W, pady = 5)
-                            price = tk.Label(frames[i], text = "$" + dish[1], bg = '#6FA8DD', font = ('helvetica', 11))
-                            price.grid(row = j, column = 2, pady = 5)
-                            # increment dish placement
-                            j += 1
-                    # increment frame
-                    i += 1
+                restaurants = SQLWrapper.get_restaurants_with_name('ManyMenus.db', name_var)
+                list_results(frame, restaurants)
+        
+        def search_loc(i, frame, city_var, state_var):
+            invalid = False
+            if len(city_var) == 0:
+                # print 'nothing was entered in the search bar'
+                invalid = tk.Label(frame, text = 'Enter a city')
+                invalid.grid(row = 1+i, column = 0, columnspan = 2)
+                invalid.after(3000, invalid.destroy)
+                invalid = True
+            elif len(state_var) == 0:
+                # print 'nothing was entered in the search bar'
+                invalid = tk.Label(frame, text = 'Enter a state')
+                invalid.grid(row = 1+i, column = 0, columnspan = 2)
+                invalid.after(3000, invalid.destroy)
+                invalid = True
+            else:
+                # print matching restaurants
+                restaurants = SQLWrapper.get_restaurants_with_location('ManyMenus.db', state_var, city_var)
+                list_results(frame, restaurants)
+        
+        def list_results(frame, restaurants):
+            frame.destroy()
+            bottom_frame = tk.Frame(self, bg = '#6FA8DD', bd = 2)
+            frames = []
+            i = 0
+            for restaurant in restaurants:
+                # add a frame
+                frames.append(tk.Frame(bottom_frame, bg = '#6FA8DD', bd = 2))
+                # first row
+                res_name = tk.Label(frames[i], text = restaurant[0], bg = '#6FA8DD', font = ('helvetica', 11, 'bold'))
+                res_name.grid(row = 0, column = 0, sticky = tk.W, pady = 3)
+                #see_more = tk.Button(frames[i], text = 'see more', font = ('helvetica', 11))
+                #see_more.grid(row = 0, column = 1, sticky = tk.E, pady = 5)
+                like_res = tk.Button(frames[i], text = 'like', font = ('helvetica', 9))
+                like_res.grid(row = 0, column = 1, sticky = tk.E, pady = 3)
+                res_address = tk.Label(frames[i], text = restaurant[4] + restaurant[2] + ', ' + restaurant[3], bg = '#6FA8DD', font = ('helvetica', 9))
+                res_address.grid(row = 1, column = 0, sticky = tk.W, pady = 2)
+                # list the menu items
+                restaurant_id = SQLWrapper.get_restaurant_id('ManyMenus.db', restaurant[1])
+                dishes = SQLWrapper.get_dishes_for_menu('ManyMenus.db', restaurant_id)
+                j = 2
+                for dish in dishes:
+                    dish_name = tk.Label(frames[i], text = dish[0], bg = '#6FA8DD', font = ('helvetica', 10))
+                    dish_name.grid(row = j, column = 0, columnspan = 2, sticky = tk.W, pady = 2)
+                    price = tk.Label(frames[i], text = "$" + dish[1], bg = '#6FA8DD', font = ('helvetica', 10))
+                    price.grid(row = j, column = 1, pady = 2)
+                    # increment dish placement
+                    j += 1
+                # place restaurant frame
+                frames[i].grid(row = i, column = 0)
+                # increment frame
+                i += 1
+            # place bottom frame
+            bottom_frame.place(relx = .5, rely = .5, anchor = tk.N)
 
         '''
         def search_fav_loc():
@@ -931,24 +962,22 @@ class Browse(tk.Frame):
         ingredient = tk.Label(self, text = 'ingredient 1', bg = '#6FA8DD', font = ('helvetica', 11))
 
         # text box
-        search_var = tk.StringVar()
         search_bar = tk.Entry(top_frame, relief = tk.GROOVE, width = 35)
 
         # buttons
         search_type = tk.StringVar()
-        #diet_var = tk. IntVar()
-        search_button = tk.Button(top_frame, text = 'Search', bg = '#6FA8DD', font = ('helvetica', 11), command = lambda: search(search_var, search_type))
-        update_info = tk.Button(self, text = 'Update Info', bg = '#6FA8DD', font = ('helvetica', 11), command = lambda: master.switch_frame(UpdateUserInfo))
-        loc_check = tk.Radiobutton(top_frame, text = 'Search locations (City, State)', variable = search_type, value = 'loc', bg = '#6FA8DD', activebackground = '#6FA8DD')
-        res_check = tk.Radiobutton(top_frame, text = 'Search restaurants', variable = search_type, value = 'res', bg = '#6FA8DD', activebackground = '#6FA8DD')
-        browse_fav_loc = tk.Button(top_frame, text = 'Browse favorite locations', bg = '#6FA8DD', activebackground = '#6FA8DD')
-        browse_fav_res = tk.Button(top_frame, text = 'Browse favorite restaurants', bg = '#6FA8DD', activebackground = '#6FA8DD')
+        #diet_var = tk.IntVar()
+        update_info = tk.Button(self, text = 'Update Info', font = ('helvetica', 11), command = lambda: master.switch_frame(UpdateUserInfo))
+        search_button = tk.Button(top_frame, text = 'Search', font = ('helvetica', 11), command = lambda: search(bottom_frame, search_bar.get(), search_type))
+        loc_check = tk.Radiobutton(top_frame, text = 'Search locations (City, State)', bg = '#6FA8DD', variable = search_type, value = 'loc', activebackground = '#6FA8DD')
+        res_check = tk.Radiobutton(top_frame, text = 'Search restaurants', bg = '#6FA8DD', variable = search_type, value = 'res', activebackground = '#6FA8DD')
+        browse_fav_loc = tk.Button(top_frame, text = 'Browse favorite locations', activebackground = '#6FA8DD')
+        browse_fav_res = tk.Button(top_frame, text = 'Browse favorite restaurants', activebackground = '#6FA8DD')
         #diet_check = tk.Checkbutton(top_frame, text = 'Filter by diet', variable = diet_var, bg = '#6FA8DD', activebackground = '#6FA8DD')
         
-        see_less = tk.Button(self, text = 'see less', bg = '#6FA8DD', font = ('helvetica', 11))
+        #see_less = tk.Button(self, text = 'see less', font = ('helvetica', 11))
         #see_last_searched = tk.Button(top_frame, text = 'see last searched', bg = '#6FA8DD', font = ('helvetica', 8))
         
-
         # Many Menus Logo
         load = Image.open(resource_path('many_menus.png')).resize((163, 106), Image.ANTIALIAS)
         self.render = ImageTk.PhotoImage(load)

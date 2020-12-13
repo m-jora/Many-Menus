@@ -55,6 +55,8 @@ class Login(tk.Frame):
                 
                 else:
                     global res_name
+                    global user_name
+                    user_name = user_entry.get()
                     res_name = SQLWrapper.get_restaurant_name('ManyMenus.db', user_entry.get())[0][0]
                     master.switch_frame(RestaurantUpdateMenu)
         
@@ -67,7 +69,6 @@ class Login(tk.Frame):
                     invalid.after(3000, invalid.destroy)
 
                 else:
-                    global user_name
                     user_name = user_entry.get()
                     master.switch_frame(Browse)
             
@@ -136,7 +137,9 @@ class RestaurantCreateAccount(tk.Frame):
                return
             
             global res_name
-            res_name = SQLWrapper.get_restaurant_name('ManyMenus.db', user_entry.get())[0][0]
+            res_name = store_entry.get()
+            global user_name
+            user_name = user_entry.get()
             master.switch_frame(RestaurantUpdateMenu)
 
         # Labels
@@ -301,20 +304,28 @@ class RestaurantUpdateInfo(tk.Frame):
         self.configure(bg = '#6FA8DD')
 
         global res_name
-        user = res_name
+        store_name = res_name
+        global user_name
+        user = user_name
+
 
         def submit(password, state, city, street, user, store, phone):
             try:
-                SQLWrapper.update_restaurant_info('ManyMenus.db', (state, city, street, password, store, phone))
+                SQLWrapper.update_restaurant_info('ManyMenus.db', (state, city, street, password, store, phone, user))
 
             except:
+
                 invalid = tk.Label(self, text = 'Invalid Field')
                 invalid.place(relx = .5, rely = .6, anchor = tk.N)
                 invalid.after(3000, invalid.destroy)
                 return
 
+            valid = tk.Label(self, text = 'Changes Saved')
+            valid.place(relx = .5, rely = .6, anchor = tk.N)
+            valid.after(3000, valid.destroy)
+
         # Text labels
-        rest_name = tk.Label(self, text = res_name, bg = '#6FA8DD', font = ('helvetica', 11))
+        rest_name = tk.Label(self, text = store_name, bg = '#6FA8DD', font = ('helvetica', 11))
         title = tk.Label(self, text = 'Restaurant Info', bg = '#6FA8DD', font = ('helvetica', 14, 'bold'))
         name_label = tk.Label(self, text = 'Restaurant Name:', bg = '#6FA8DD')
         address_label = tk.Label(self, text = 'Restaurant Address:', bg = '#6FA8DD')

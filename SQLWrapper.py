@@ -682,7 +682,7 @@ def get_restaurant_id(database_file, username):
 
     restaurantID = curr.fetchone()
 
-    if len(restaurantID) > 1:
+    if restaurantID is not None:
         return restaurantID[0]
 
 def get_dish_id(database_file, menu_id, dish_name):

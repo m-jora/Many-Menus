@@ -682,7 +682,8 @@ def get_restaurant_id(database_file, username):
 
     restaurantID = curr.fetchone()
 
-    return restaurantID[0]
+    if len(restaurantID) > 1:
+        return restaurantID[0]
 
 def get_dish_id(database_file, menu_id, dish_name):
     conn = sqlite3.connect(database_file)

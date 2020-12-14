@@ -723,4 +723,21 @@ def get_number_of_users(database_file):
     return (numOfRestaurantUsers + numOfCustomers)
 
 
+# Purpose: Gets the number of calories in a dish
+def get_calories_in_dish(database_file, dishID):
+    conn = sqlite3.connect(database_file)
+
+    curr = conn.cursor()
+    curr.execute("SELECT calories, quantityInDish FROM DishFoods WHERE DishID = ?", (dishID,))
+
+    caloriesInDish = curr.fetchall()
+
+    returnSum = 0
+
+    for x in caloriesInDish:
+        returnSum += x[0]*x[1]
+
+    return(returnSum)
+
+
 initialize_database("ManyMenus.db")

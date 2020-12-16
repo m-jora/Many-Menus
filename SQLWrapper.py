@@ -166,7 +166,7 @@ def initialize_database(database_file):
             CREATE TABLE IF NOT EXISTS Dish(
                 DishID INTEGER PRIMARY KEY AUTOINCREMENT,
                 DishName TEXT,
-                MenuID TEXT,
+                MenuID INTEGER,
                 Price TEXT,
                 FOREIGN KEY(MenuID) REFERENCES MenuID(Menu)
         )""")

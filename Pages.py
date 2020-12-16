@@ -539,10 +539,11 @@ class RestaurantUpdateMenu(tk.Frame):
         tk.Frame.__init__(self, master)
         self.configure(bg = '#6FA8DD')
 
-        global res_name
+        global user_name
 
         menu_frame = tk.Frame(self, bg = '#6FA8DD', bd = 2)
-        restaurant_id = SQLWrapper.get_restaurant_id('ManyMenus.db', res_name)
+        restaurant_id = SQLWrapper.get_restaurant_id('ManyMenus.db', user_name)
+        print(restaurant_id)
 
         def add_new_dish(i, frame, name, price, restaurant_id):
             invalid = False

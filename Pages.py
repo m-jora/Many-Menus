@@ -311,6 +311,8 @@ class RestaurantUpdateInfo(tk.Frame):
 
         def submit(password, state, city, street, user, store, phone):
             try:
+                global res_name
+                res_name = store
                 SQLWrapper.update_restaurant_info('ManyMenus.db', (state, city, street, password, store, phone, user))
 
             except:
@@ -398,6 +400,7 @@ class RestaurantUpdateInventory(tk.Frame):
         self.configure(bg = '#6FA8DD')
 
         global user_name
+        global res_name
 
         ing_frame = tk.Frame(self, bg = '#6FA8DD', bd = 2)
         restaurant_id = SQLWrapper.get_restaurant_id('ManyMenus.db', user_name)
@@ -540,6 +543,7 @@ class RestaurantUpdateMenu(tk.Frame):
         self.configure(bg = '#6FA8DD')
 
         global user_name
+        global res_name
 
         menu_frame = tk.Frame(self, bg = '#6FA8DD', bd = 2)
         restaurant_id = SQLWrapper.get_restaurant_id('ManyMenus.db', user_name)
@@ -986,7 +990,7 @@ class Browse(tk.Frame):
         title_label = tk.Label(self, text = 'Browse Menus', bg = '#6FA8DD', font = ('helvetica', 14, 'bold'))
         city_label = tk.Label(top_frame, text = 'City:', bg = '#6FA8DD', font = ('helvetica', 10))
         state_label = tk.Label(top_frame, text = 'State:', bg = '#6FA8DD', font = ('helvetica', 10))
-        num_users_label = tk.Label(self, text = str(num_users) + 'users are on Many Menus!', bg = '#6FA8DD', font = ('helvetica', 10, 'italic'))
+        num_users_label = tk.Label(self, text = str(num_users) + ' users are on Many Menus!', bg = '#6FA8DD', font = ('helvetica', 10, 'italic'))
         search_bar = tk.Entry(top_frame, relief = tk.GROOVE, width = 35)
         city_bar = tk.Entry(top_frame, relief = tk.GROOVE, width = 10)
         state_bar = tk.Entry(top_frame, relief = tk.GROOVE, width = 4)

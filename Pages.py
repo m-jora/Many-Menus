@@ -986,7 +986,7 @@ class Browse(tk.Frame):
         title_label = tk.Label(self, text = 'Browse Menus', bg = '#6FA8DD', font = ('helvetica', 14, 'bold'))
         city_label = tk.Label(top_frame, text = 'City:', bg = '#6FA8DD', font = ('helvetica', 10))
         state_label = tk.Label(top_frame, text = 'State:', bg = '#6FA8DD', font = ('helvetica', 10))
-        num_users_label = tk.Label(self, text = str(num_users) + ' users on on Many Menus!', bg = '#6FA8DD', font = ('helvetica', 10, 'italic'))
+        num_users_label = tk.Label(self, text = str(num_users) + 'users are on Many Menus!', bg = '#6FA8DD', font = ('helvetica', 10, 'italic'))
         search_bar = tk.Entry(top_frame, relief = tk.GROOVE, width = 35)
         city_bar = tk.Entry(top_frame, relief = tk.GROOVE, width = 10)
         state_bar = tk.Entry(top_frame, relief = tk.GROOVE, width = 4)

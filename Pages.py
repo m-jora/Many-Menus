@@ -397,10 +397,10 @@ class RestaurantUpdateInventory(tk.Frame):
         tk.Frame.__init__(self, master)
         self.configure(bg = '#6FA8DD')
 
-        global res_name
+        global user_name
 
         ing_frame = tk.Frame(self, bg = '#6FA8DD', bd = 2)
-        restaurant_id = SQLWrapper.get_restaurant_id('ManyMenus.db', res_name)
+        restaurant_id = SQLWrapper.get_restaurant_id('ManyMenus.db', user_name)
 
         #def save_amount(i):
         '''
